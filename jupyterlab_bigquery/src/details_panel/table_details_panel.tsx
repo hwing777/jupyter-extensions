@@ -83,8 +83,12 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
     } else {
       return (
         <div>
-          <DetailsPanel details={this.state.details} rows={this.state.rows} />
-          <div>
+          <DetailsPanel
+            details={this.state.details}
+            rows={this.state.rows}
+            type="table"
+          />
+          {/* <div>
             <b>Schema: </b>
             {this.state.details.schema
               ? this.state.details.schema.map((value, index) => {
@@ -95,7 +99,7 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
                   );
                 })
               : 'None'}
-          </div>
+          </div> */}
         </div>
       );
     }

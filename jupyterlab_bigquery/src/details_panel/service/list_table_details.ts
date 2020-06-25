@@ -22,6 +22,8 @@ export interface TableDetailsObject {
 interface Field {
   name: string;
   type: string;
+  description: string;
+  mode: string;
 }
 
 export interface TableDetails {

@@ -89,7 +89,9 @@ def get_dataset_details(dataset_id):
 def get_schema(schema):
     return [{
         'name': field.name,
-        'type': field.field_type
+        'type': field.field_type,
+        'description': field.description,
+        'mode': field.mode,
     } for field in schema]
 
 

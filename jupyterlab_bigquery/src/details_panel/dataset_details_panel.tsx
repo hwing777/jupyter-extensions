@@ -82,7 +82,11 @@ export default class DatasetDetailsPanel extends React.Component<Props, State> {
       return <LoadingPanel />;
     } else {
       return (
-        <DetailsPanel details={this.state.details} rows={this.state.rows} />
+        <DetailsPanel
+          details={this.state.details}
+          rows={this.state.rows}
+          type="dataset"
+        />
       );
     }
   }
