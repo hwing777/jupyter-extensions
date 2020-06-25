@@ -2,6 +2,7 @@ import { ServerConnection } from '@jupyterlab/services';
 import { URLExt } from '@jupyterlab/coreutils';
 
 export interface TableDetailsObject {
+  name: string;
   id: string;
   display_name: string;
   description: string;

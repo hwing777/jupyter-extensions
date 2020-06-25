@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { TableDetailsService } from './service/list_table_details';
+import LoadingPanel from '../loading_panel';
+import { DetailsPanel } from './details_panel';
 
 interface Props {
   tableDetailsService: TableDetailsService;
@@ -13,6 +15,7 @@ interface State {
   isLoading: boolean;
   // TODO(cxjia): type these details
   details: any;
+  rows: any[];
 }
 
 export default class TableDetailsPanel extends React.Component<Props, State> {
@@ -20,8 +23,9 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
     super(props);
     this.state = {
       hasLoaded: false,
-      isLoading: false,
+      isLoading: true,
       details: { details: {} },
+      rows: [],
     };
   }
 
@@ -42,63 +46,48 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
   }
 
   private async getDetails() {
-    console.log('starting getDetails');
     try {
       this.setState({ isLoading: true });
-      const details = await this.props.tableDetailsService.listTableDetails(
+      const detailsResult = await this.props.tableDetailsService.listTableDetails(
         this.props.table_id
       );
-      this.setState({ hasLoaded: true, details });
-      console.log('Details: ', this.state.details);
+
+      let details = detailsResult.details;
+      const rows = [
+        { name: 'Table ID', value: details.id },
+        { name: 'Table size', value: `${details.num_bytes} Bytes` },
+        { name: 'Number of rows', value: details.num_rows },
+        { name: 'Created', value: details.date_created },
+        {
+          name: 'Table expiration',
+          value: details.expires ? details.expires : 'Never',
+        },
+        { name: 'Last modified', value: details.last_modified },
+        {
+          name: 'Data location',
+          value: details.location ? details.location : 'None',
+        },
+      ];
+
+      this.setState({ hasLoaded: true, details, rows });
     } catch (err) {
-      console.warn('Error retrieving dataset details', err);
+      console.warn('Error retrieving table details', err);
     } finally {
       this.setState({ isLoading: false });
     }
   }
 
   render() {
-    const details = this.state.details.details;
     if (this.state.isLoading) {
-      return <div>loading</div>;
+      return <LoadingPanel />;
     } else {
       return (
-        <div style={{ margin: 30 }}>
-          <div>{`Details for table ${details.id}`}</div>
-          <br />
+        <div>
+          <DetailsPanel details={this.state.details} rows={this.state.rows} />
           <div>
-            Description: {details.description ? details.description : 'None'}
-          </div>
-          <div>
-            Labels:{' '}
-            {details.labels ? (
-              <ul>
-                {details.labels.map((value, index) => {
-                  return <li key={index}>{value}</li>;
-                })}
-              </ul>
-            ) : (
-              'None'
-            )}
-          </div>
-          <br />
-          <div>{`Table ID: ${details.id}`}</div>
-          <div>{`Table size: ${details.num_bytes} Bytes`}</div>
-          <div>{`Number of rows: ${details.num_rows}`}</div>
-          <div>{`Created: ${details.date_created}`}</div>
-          <div>
-            Table expiration:{' '}
-            {details.expiration ? details.expiration : 'Never'}
-          </div>
-          <div>{`Last modified: ${details.last_modified}`}</div>
-          <div>
-            Data location: {details.location ? details.location : 'None'}
-          </div>
-          <br />
-          <div>
-            Schema:
-            {details.schema
-              ? details.schema.map((value, index) => {
+            <b>Schema: </b>
+            {this.state.details.schema
+              ? this.state.details.schema.map((value, index) => {
                   return (
                     <div key={index}>
                       {value.name}: {value.type}

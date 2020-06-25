@@ -97,6 +97,7 @@ def get_table_details(table_id):
   table = client.get_table(table_id)
   return {
       'details': {
+          'name': table.table_id,
           'id': "{}.{}.{}".format(table.project, table.dataset_id, table.table_id),
           'display_name': table.friendly_name,
           'description': table.description,

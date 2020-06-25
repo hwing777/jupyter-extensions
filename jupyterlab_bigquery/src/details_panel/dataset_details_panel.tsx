@@ -1,6 +1,8 @@
 import * as React from 'react';
 
 import { DatasetDetailsService } from './service/list_dataset_details';
+import LoadingPanel from '../loading_panel';
+import { DetailsPanel } from './details_panel';
 
 interface Props {
   datasetDetailsService: DatasetDetailsService;
@@ -13,6 +15,7 @@ interface State {
   isLoading: boolean;
   // TODO(cxjia): type these details
   details: any;
+  rows: any[];
 }
 
 export default class DatasetDetailsPanel extends React.Component<Props, State> {
@@ -20,8 +23,9 @@ export default class DatasetDetailsPanel extends React.Component<Props, State> {
     super(props);
     this.state = {
       hasLoaded: false,
-      isLoading: false,
+      isLoading: true,
       details: { details: {} },
+      rows: [],
     };
   }
 
@@ -42,14 +46,30 @@ export default class DatasetDetailsPanel extends React.Component<Props, State> {
   }
 
   private async getDetails() {
-    console.log('starting getDetails');
     try {
       this.setState({ isLoading: true });
-      const details = await this.props.datasetDetailsService.listDatasetDetails(
+      const detailsResult = await this.props.datasetDetailsService.listDatasetDetails(
         this.props.dataset_id
       );
-      this.setState({ hasLoaded: true, details });
-      console.log('Details: ', this.state.details);
+
+      const details = detailsResult.details;
+      const rows = [
+        { name: 'Dataset ID', value: details.id },
+        { name: 'Created', value: details.date_created },
+        {
+          name: 'Default table expiration',
+          value: details.default_expiration
+            ? details.default_expiration
+            : 'Never',
+        },
+        { name: 'Last modified', value: details.last_modified },
+        {
+          name: 'Data location',
+          value: details.location ? details.location : 'None',
+        },
+      ];
+
+      this.setState({ hasLoaded: true, details, rows });
     } catch (err) {
       console.warn('Error retrieving dataset details', err);
     } finally {
@@ -58,41 +78,11 @@ export default class DatasetDetailsPanel extends React.Component<Props, State> {
   }
 
   render() {
-    const details = this.state.details.details;
     if (this.state.isLoading) {
-      return <div>loading</div>;
+      return <LoadingPanel />;
     } else {
       return (
-        <div style={{ margin: 30 }}>
-          <div>{`Details for dataset ${details.id}`}</div>
-          <br />
-          <div>
-            Description: {details.description ? details.description : 'None'}
-          </div>
-          <div>
-            Labels:{' '}
-            {details.labels ? (
-              <ul>
-                {details.labels.map((value, index) => {
-                  return <li key={index}>{value}</li>;
-                })}
-              </ul>
-            ) : (
-              'None'
-            )}
-          </div>
-          <br />
-          <div>{`Dataset ID: ${details.id}`}</div>
-          <div>{`Created: ${details.date_created}`}</div>
-          <div>
-            Default table expiration:{' '}
-            {details.default_expiration ? details.default_expiration : 'Never'}
-          </div>
-          <div>{`Last modified: ${details.last_modified}`}</div>
-          <div>
-            Data location: {details.location ? details.location : 'None'}
-          </div>
-        </div>
+        <DetailsPanel details={this.state.details} rows={this.state.rows} />
       );
     }
   }
