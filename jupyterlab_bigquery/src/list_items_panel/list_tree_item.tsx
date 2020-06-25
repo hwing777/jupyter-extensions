@@ -118,7 +118,7 @@ function ListItem(props) {
         <div className={localStyles.icon} onClick={() => handleExpand()}>
           {getIconForWord(props.subfields)}
         </div>
-        <div className={localStyles.details} onClick={props.openDetails}>
+        <div className={localStyles.details} onDoubleClick={props.openDetails}>
           <a className="{css.link}" href="#">
             {props.name}
           </a>

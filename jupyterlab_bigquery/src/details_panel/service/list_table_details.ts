@@ -15,7 +15,12 @@ export interface TableDetailsObject {
   link: string;
   num_rows: number;
   num_bytes: number;
-  schema: string;
+  schema: Field[];
+}
+
+interface Field {
+  name: string;
+  type: string;
 }
 
 export interface TableDetails {
