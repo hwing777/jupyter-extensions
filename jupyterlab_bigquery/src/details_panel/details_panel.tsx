@@ -38,6 +38,9 @@ export const localStyles = stylesheet({
     display: 'flex',
     padding: '6px',
   },
+  detailTable: {
+    marginTop: '16px',
+  },
 });
 
 const getStripedStyle = index => {
@@ -74,7 +77,7 @@ export const DetailsPanel = props => {
           <Grid item xs={12}>
             <div className={localStyles.title}>Dataset info</div>
           </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} className={localStyles.detailTable}>
             {rows.map((row, index) => (
               <div
                 key={index}
