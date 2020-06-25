@@ -20,7 +20,7 @@ class QueryEditorTab extends React.Component<
   }
 
   render() {
-    return <div style={{ flexGrow: 1 }}>Here</div>;
+    return <div style={{ height: '50%' }}>Here</div>;
   }
 }
 

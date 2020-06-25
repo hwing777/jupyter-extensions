@@ -51,7 +51,7 @@ function createData(name, calories, fat, carbs, protein) {
 }
 
 export const QueryResults = () => {
-  const fields = ['name', 'gender', 'count'];
+  const fields = ['Row', 'name', 'fat', 'carbs'];
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -78,7 +78,7 @@ export const QueryResults = () => {
   //   };
 
   return (
-    <div style={{ flexGrow: 1 }}>
+    <div style={{ height: '50%' }}>
       <div className={localStyles.header}>Query results</div>
 
       <div>
@@ -93,10 +93,13 @@ export const QueryResults = () => {
           <TableBody>
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map(row => (
+              .map((row, index) => (
                 <TableRow key={row.name}>
                   <TableCell className={localStyles.tableCell}>
-                    {row.calories}
+                    {index + 1}
+                  </TableCell>
+                  <TableCell className={localStyles.tableCell}>
+                    {row.name}
                   </TableCell>
                   <TableCell className={localStyles.tableCell}>
                     {row.fat}
