@@ -52,7 +52,7 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
         this.props.table_id
       );
 
-      let details = detailsResult.details;
+      const details = detailsResult.details;
       const rows = [
         { name: 'Table ID', value: details.id },
         { name: 'Table size', value: `${details.num_bytes} Bytes` },
