@@ -8,7 +8,7 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 
 import { ListProjectsService, Projects } from './service/list_items';
 import { ListProjectItem } from './list_tree_item';
-import { WidgetManager } from '../widget_manager';
+import { WidgetManager } from '../../utils/widget_manager';
 import { QueryEditorTabWidget } from '../query_editor/query_editor_tab/query_editor_tab_widget';
 
 interface Props {
@@ -94,13 +94,12 @@ export class ListItemsPanel extends React.Component<Props, State> {
             <Button
               color="primary"
               size="small"
-              mini
               variant="contained"
               className={localStyles.editQueryButton}
               onClick={() => {
-                this.props.context.manager.launchWidgetForId(
-                  QueryEditorTabWidget.id,
-                  QueryEditorTabWidget
+                this.props.context.manager.launchWidget(
+                  QueryEditorTabWidget,
+                  'main'
                 );
               }}
             >
