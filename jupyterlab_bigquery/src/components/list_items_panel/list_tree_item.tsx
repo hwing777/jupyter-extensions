@@ -137,7 +137,9 @@ export class ListProjectItem extends React.Component<ProjectProps, State> {
       <ListItem name={project.id} subfields={project.datasets}>
         <ul className={localStyles.list}>
           {project.datasets.map(d => (
-            <ListDatasetItem key={d.id} dataset={d} context={context} />
+            <div className="jp-bigquery-DirListing">
+              <ListDatasetItem key={d.id} dataset={d} context={context} />
+            </div>
           ))}
         </ul>
       </ListItem>

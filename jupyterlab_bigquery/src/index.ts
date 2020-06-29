@@ -9,6 +9,24 @@ import {
 import { ListItemsWidget } from './components/list_items_panel/list_tree_item_widget';
 import { ListProjectsService } from './components/list_items_panel/service/list_items';
 import { WidgetManager } from './utils/widget_manager';
+import { Clipboard } from '@jupyterlab/apputils';
+
+const copyID = 'bigquery:copy-id';
+
+function addCommands(app: JupyterFrontEnd) {
+  const { commands } = app;
+
+  commands.addCommand(copyID, {
+    label: 'Copy ID',
+    isEnabled: () => true,
+    isVisible: () => true,
+    iconClass: 'jp-MaterialIcon jp-CopyIcon',
+    execute: () => {
+      console.log('Its working!');
+      Clipboard.copyToSystem('hello :0');
+    },
+  });
+}
 
 async function activate(app: JupyterFrontEnd) {
   const manager = new WidgetManager(app);
@@ -16,6 +34,13 @@ async function activate(app: JupyterFrontEnd) {
   const listProjectsService = new ListProjectsService();
   const listWidget = new ListItemsWidget(listProjectsService, context);
   listWidget.addClass('jp-BigQueryIcon');
+
+  addCommands(app);
+  app.contextMenu.addItem({
+    command: copyID,
+    selector: '.jp-bigquery-DirListing',
+  });
+
   app.shell.add(listWidget, 'left', { rank: 100 });
 }
 
