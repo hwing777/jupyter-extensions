@@ -165,7 +165,6 @@ export function BuildTree(data) {
 class ListProjectItem extends React.Component<ProjectProps, State> {
   render() {
     const { data } = this.props;
-    console.log('got here');
     console.log(data);
     return <div>{BuildTree(data)}</div>;
   }

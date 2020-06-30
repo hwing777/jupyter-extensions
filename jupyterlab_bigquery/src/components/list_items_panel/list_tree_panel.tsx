@@ -87,9 +87,10 @@ class ListItemsPanel extends React.Component<Props, State> {
   }
 
   render() {
-    this.props.updateDataTree({ projects: [] });
     const { isLoading } = this.state;
     const { data } = this.props;
+    console.log('got here');
+    console.log(data);
     return (
       <div className={localStyles.panel}>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -137,7 +138,6 @@ class ListItemsPanel extends React.Component<Props, State> {
           this.props.updateDataTree(data);
           this.setState({ hasLoaded: true });
         });
-      console.log('got projects');
     } catch (err) {
       console.warn('Error retrieving projects', err);
     } finally {
@@ -147,7 +147,8 @@ class ListItemsPanel extends React.Component<Props, State> {
 }
 
 const mapStateToProps = state => {
-  return { data: state.dataTreeSlice.data };
+  const data = state.dataTree.data;
+  return { data };
 };
 const mapDispatchToProps = {
   updateDataTree,
