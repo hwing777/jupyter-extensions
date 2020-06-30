@@ -1,7 +1,7 @@
 import { ServerConnection } from '@jupyterlab/services';
 import { URLExt } from '@jupyterlab/coreutils';
 
-export interface Projects {
+export interface DataTree {
   projects: Project[];
 }
 
@@ -27,7 +27,7 @@ export interface Model {
 }
 
 export class ListProjectsService {
-  async listProjects(numItems: number): Promise<Projects> {
+  async listProjects(numItems: number): Promise<DataTree> {
     return new Promise((resolve, reject) => {
       const serverSettings = ServerConnection.makeSettings();
       const requestUrl = URLExt.join(
