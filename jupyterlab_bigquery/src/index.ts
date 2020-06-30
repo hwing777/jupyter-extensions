@@ -14,9 +14,8 @@ import { Clipboard } from '@jupyterlab/apputils';
 
 const copyID = 'bigquery:copy-id';
 
-function addCommands(app: JupyterFrontEnd, factory: IBigQueryFactory) {
+function addCommands(app: JupyterFrontEnd, widget: ListItemsWidget) {
   const { commands } = app;
-  const { tracker } = factory;
 
   commands.addCommand(copyID, {
     label: 'Copy ID',
@@ -24,12 +23,13 @@ function addCommands(app: JupyterFrontEnd, factory: IBigQueryFactory) {
     isVisible: () => true,
     iconClass: 'jp-MaterialIcon jp-CopyIcon',
     execute: () => {
-      const widget = tracker.currentWidget;
       if (!widget) {
         return;
       }
 
-      const id = widget.id;
+      // const item = widget.selectedItems().next();
+      // const id = item.id;
+      const id = "hi";
 
       console.log(id);
       Clipboard.copyToSystem(id);
@@ -44,7 +44,7 @@ async function activate(app: JupyterFrontEnd, factory: IBigQueryFactory) {
   const listWidget = new ListItemsWidget(listProjectsService, context);
   listWidget.addClass('jp-BigQueryIcon');
 
-  addCommands(app, factory);
+  addCommands(app, listWidget);
   app.contextMenu.addItem({
     command: copyID,
     selector: '.jp-bigquery-DirListing',
