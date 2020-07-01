@@ -7,6 +7,7 @@ export interface DataTree {
 
 export interface Project {
   id: string;
+  name: string;
   datasets: Dataset[];
 }
 
@@ -54,6 +55,7 @@ export class ListProjectsService {
             projects: content.projects.map((p: any) => {
               return {
                 id: p.id,
+                name: p.name,
                 datasets: p.datasets,
               };
             }),

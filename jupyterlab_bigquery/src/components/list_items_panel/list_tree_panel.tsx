@@ -6,7 +6,7 @@ import { stylesheet } from 'typestyle';
 import { JupyterFrontEnd } from '@jupyterlab/application';
 // import { Contents } from '@jupyterlab/services';
 
-import { ListProjectsService, DataTree } from './service/list_items';
+import { ListProjectsService, DataTree, Project } from './service/list_items';
 import ListProjectItem from './list_tree_item';
 import { WidgetManager } from '../../utils/widget_manager';
 import { QueryEditorTabWidget } from '../query_editor/query_editor_tab/query_editor_tab_widget';
@@ -18,7 +18,6 @@ interface Props {
   isVisible: boolean;
   context: Context;
   updateDataTree: any;
-  data: DataTree;
 }
 
 export interface Context {
@@ -88,9 +87,6 @@ class ListItemsPanel extends React.Component<Props, State> {
 
   render() {
     const { isLoading } = this.state;
-    const { data } = this.props;
-    console.log('got here');
-    console.log(data);
     return (
       <div className={localStyles.panel}>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -116,13 +112,7 @@ class ListItemsPanel extends React.Component<Props, State> {
           <LinearProgress />
         ) : (
           <ul className={localStyles.list}>
-            {data.projects.map(p => (
-              <ListProjectItem
-                key={p.id}
-                project={p}
-                context={this.props.context}
-              /> //TODO: enter table here
-            ))}
+            <ListProjectItem context={this.props.context} />
           </ul>
         )}
       </div>
@@ -147,8 +137,7 @@ class ListItemsPanel extends React.Component<Props, State> {
 }
 
 const mapStateToProps = state => {
-  const data = state.dataTree.data;
-  return { data };
+  return {};
 };
 const mapDispatchToProps = {
   updateDataTree,

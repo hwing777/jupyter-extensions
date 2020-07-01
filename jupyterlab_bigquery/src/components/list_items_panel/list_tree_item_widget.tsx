@@ -49,6 +49,7 @@ export default class ListItemsWidget extends ReduxReactWidget {
   }
 
   renderReact() {
+    console.log(this.context);
     return (
       <UseSignal signal={this.visibleSignal}>
         {(_, isVisible) => (

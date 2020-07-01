@@ -1,5 +1,7 @@
-import { withStyles } from '@material-ui/core';
+import { LinearProgress, withStyles } from '@material-ui/core';
 import { ArrowDropDown, ArrowRight } from '@material-ui/icons';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import * as csstips from 'csstips';
@@ -9,12 +11,12 @@ import { connect } from 'react-redux';
 import { stylesheet } from 'typestyle';
 
 // import { DataTree, Project, Dataset, Table, Model } from './service/list_items';
-import { DataTree, Project } from './service/list_items';
+import { DataTree } from './service/list_items';
 import { Context } from './list_tree_item_widget';
-// import { DatasetDetailsWidget } from '../details_panel/dataset_details_widget';
-// import { DatasetDetailsService } from '../details_panel/service/list_dataset_details';
-// import { TableDetailsWidget } from '../details_panel/table_details_widget';
-// import { TableDetailsService } from '../details_panel/service/list_table_details';
+import { DatasetDetailsWidget } from '../details_panel/dataset_details_widget';
+import { DatasetDetailsService } from '../details_panel/service/list_dataset_details';
+import { TableDetailsWidget } from '../details_panel/table_details_widget';
+import { TableDetailsService } from '../details_panel/service/list_table_details';
 
 //import { COLORS, css } from '../styles';
 
@@ -71,7 +73,7 @@ const localStyles = stylesheet({
 });
 
 interface ProjectProps {
-  project: Project;
+  // project: Project;
   context: Context;
   data: DataTree;
 }
@@ -106,11 +108,56 @@ const ArrowDown = withStyles({
   },
 })(ArrowDropDown);
 
-export function BuildTree(data) {
-  const renderTree = nodes => (
-    <TreeItem key={nodes.id} nodeId={nodes.id} label={nodes.name}>
-      {Array.isArray(nodes.children)
-        ? nodes.children.map(node => renderTree(node))
+export function BuildTree(project, context) {
+  const openDatasetDetails = dataset => {
+    const service = new DatasetDetailsService();
+    const widgetType = DatasetDetailsWidget;
+    context.manager.launchWidgetForId(
+      dataset.id,
+      widgetType,
+      service,
+      dataset.id,
+      dataset.name
+    );
+  };
+
+  const openTableDetails = table => {
+    const service = new TableDetailsService();
+    const widgetType = TableDetailsWidget;
+    context.manager.launchWidgetForId(
+      table.id,
+      widgetType,
+      service,
+      table.id,
+      table.name
+    );
+  };
+
+  const renderTables = table => (
+    <TreeItem key={table.id} nodeId={table.id} label={table.name} />
+  );
+
+  const renderModels = model => (
+    <TreeItem key={model.id} nodeId={model.id} label={model.name} />
+  );
+
+  const renderDatasets = dataset => (
+    <div onDoubleClick={() => openDatasetDetails(dataset)}>
+      <TreeItem key={dataset.id} nodeId={dataset.id} label={dataset.name}>
+        {Array.isArray(dataset.tables)
+          ? dataset.tables.map(table => renderTables(table))
+          : null}
+        {Array.isArray(dataset.models)
+          ? dataset.models.map(model => renderModels(model))
+          : null}
+      </TreeItem>
+    </div>
+  );
+
+  const renderProjects = (id, name, datasets) => (
+    <TreeItem key={id} nodeId={id} label={name}>
+      {Array.isArray(datasets)
+        ? datasets.map(dataset => renderDatasets(dataset))
         : null}
     </TreeItem>
   );
@@ -118,11 +165,11 @@ export function BuildTree(data) {
   return (
     <TreeView
       className={localStyles.root}
-      defaultCollapseIcon={<ArrowDown />}
+      defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpanded={['root']}
-      defaultExpandIcon={<BigArrowRight />}
+      defaultExpandIcon={<ChevronRightIcon />}
     >
-      {renderTree(data)}
+      {renderProjects(project.id, project.name, project.datasets)}
     </TreeView>
   );
 }
@@ -163,10 +210,21 @@ export function BuildTree(data) {
 // }
 
 class ListProjectItem extends React.Component<ProjectProps, State> {
+  constructor(props: ProjectProps) {
+    super(props);
+  }
+
   render() {
-    const { data } = this.props;
-    console.log(data);
-    return <div>{BuildTree(data)}</div>;
+    const { data, context } = this.props;
+    if (data.projects.length > 0) {
+      console.log(context);
+      return data.projects.map(p => (
+        <div key={p.id}>{BuildTree(p, context)}</div>
+      ));
+    } else {
+      console.log('not loaded yet!');
+      return <LinearProgress />;
+    }
   }
 }
 
@@ -243,7 +301,8 @@ class ListProjectItem extends React.Component<ProjectProps, State> {
 // }
 
 const mapStateToProps = state => {
-  return { data: state.dataTreeSlice.data };
+  const data = state.dataTree.data;
+  return { data };
 };
 
 export default connect(mapStateToProps, null)(ListProjectItem);
