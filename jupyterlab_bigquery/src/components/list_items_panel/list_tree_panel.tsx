@@ -8,8 +8,14 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { ListProjectsService, DataTree } from './service/list_items';
 import ListProjectItem from './list_tree_item';
 import { WidgetManager } from '../../utils/widgetManager/widget_manager';
+import ListSearchResults from './list_search_results';
 import { QueryEditorTabWidget } from '../query_editor/query_editor_tab/query_editor_tab_widget';
 import { updateDataTree } from '../../reducers/dataTreeSlice';
+import {
+  SearchProjectsService,
+  SearchResult,
+} from '../list_items_panel/service/search_items';
+import { SearchBar } from './search_bar';
 
 interface Props {
   listProjectsService: ListProjectsService;
@@ -26,6 +32,8 @@ export interface Context {
 interface State {
   hasLoaded: boolean;
   isLoading: boolean;
+  isSearching: boolean;
+  searchResults: SearchResult[];
 }
 
 const localStyles = stylesheet({
@@ -38,6 +46,15 @@ const localStyles = stylesheet({
     padding: '8px 12px',
     textTransform: 'uppercase',
   },
+  editQueryButton: {
+    margin: 'auto',
+  },
+  list: {
+    margin: 0,
+    overflowY: 'scroll',
+    padding: 0,
+    ...csstips.flex,
+  },
   panel: {
     backgroundColor: 'white',
     //color: COLORS.base,
@@ -47,15 +64,6 @@ const localStyles = stylesheet({
     marginTop: '5px',
     marginBottom: '5px',
   },
-  list: {
-    margin: 0,
-    overflowY: 'scroll',
-    padding: 0,
-    ...csstips.flex,
-  },
-  editQueryButton: {
-    margin: 'auto',
-  },
 });
 
 class ListItemsPanel extends React.Component<Props, State> {
@@ -64,8 +72,35 @@ class ListItemsPanel extends React.Component<Props, State> {
     this.state = {
       hasLoaded: false,
       isLoading: false,
+      isSearching: false,
+      searchResults: [],
     };
   }
+
+  async search(searchKey, project) {
+    try {
+      this.setState({ isLoading: true, isSearching: true });
+      const service = new SearchProjectsService();
+      await service.searchProjects(searchKey, project).then(results => {
+        this.setState({ searchResults: results.searchResults });
+      });
+    } catch (err) {
+      console.warn('Error searching', err);
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  }
+
+  handleKeyPress = event => {
+    if (event.key === 'Enter') {
+      const searchKey = event.target.value;
+      this.search(searchKey, 'hwing-sandbox');
+    }
+  };
+
+  handleClear = () => {
+    this.setState({ isSearching: false });
+  };
 
   async componentWillMount() {
     try {
@@ -84,7 +119,7 @@ class ListItemsPanel extends React.Component<Props, State> {
   }
 
   render() {
-    const { isLoading } = this.state;
+    const { isLoading, isSearching, searchResults } = this.state;
     return (
       <div className={localStyles.panel}>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -104,10 +139,22 @@ class ListItemsPanel extends React.Component<Props, State> {
             >
               Edit Query
             </Button>
+            <SearchBar
+              handleKeyPress={this.handleKeyPress}
+              handleClear={this.handleClear}
+              defaultText={'Search...'}
+            />
           </header>
         </div>
         {isLoading ? (
           <LinearProgress />
+        ) : isSearching ? (
+          <ul className={localStyles.list}>
+            <ListSearchResults
+              context={this.props.context}
+              searchResults={searchResults}
+            />
+          </ul>
         ) : (
           <ul className={localStyles.list}>
             <ListProjectItem context={this.props.context} />
