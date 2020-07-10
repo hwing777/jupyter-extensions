@@ -43,6 +43,35 @@ def list_projects(client):
     return {'projects': projects_list}
 
 
+def format_search_result(resultType, resource):
+    projectNameSearch = re.search('projects/(.*)/datasets', resource)
+    project = projectNameSearch.group(1)
+
+    if resultType == 'entry.dataset':
+        res = re.search('datasets/(.*)', resource)
+        dataset = res.group(1)
+        return(
+            {'type': 'dataset', 'parent': project, 'name': dataset, 'id': '{}.{}'.format(project, dataset)})
+    elif resultType == 'entry.table':
+        res = re.search('datasets/(.*)/tables/(.*)', resource)
+        dataset = res.group(1)
+        table = res.group(2)
+        return(
+            {'type': 'table', 'parent': dataset, 'name': table, 'id': '{}.{}.{}'.format(project, dataset, table)})
+    elif resultType == 'entry.table.view':
+        res = re.search('datasets/(.*)/tables/(.*)', resource)
+        dataset = res.group(1)
+        view = res.group(2)
+        return(
+            {'type': 'view', 'parent': dataset, 'name': view, 'id': '{}.{}.{}'.format(project, dataset, view)})
+    elif resultType == 'entry.model':
+        res = re.search('datasets/(.*)/tables/(.*)', resource)
+        dataset = res.group(1)
+        model = res.group(2)
+        return(
+            {'type': 'model', 'parent': dataset, 'name': model, 'id': '{}.{}.{}'.format(project, dataset, model)})
+
+
 def search_projects(bigquery_client, datacatalog_client, search_key, project_id):
     scope = types.SearchCatalogRequest.Scope()
     scope.include_project_ids.append(project_id)
@@ -51,32 +80,10 @@ def search_projects(bigquery_client, datacatalog_client, search_key, project_id)
 
     fetched_results = []
     for result in results:
-        resource = result.linked_resource
+        resourceName = result.linked_resource
         resultType = format(result.search_result_subtype)
-        if resultType == 'entry.dataset':
-            res = re.search('projects/(.*)/datasets/(.*)', resource)
-            project = res.group(1)
-            dataset = res.group(2)
-            fetched_results.append(
-                {'type': 'dataset', 'parent': project, 'name': table, 'id': '{}.{}'.format(project, dataset)})
-        elif resultType == 'entry.table':
-            res = re.search('datasets/(.*)/tables/(.*)', resource)
-            dataset = res.group(1)
-            table = res.group(2)
-            fetched_results.append(
-                {'type': 'table', 'parent': dataset, 'name': table, 'id': '{}.{}'.format(dataset, table)})
-        elif resultType == 'entry.table.view':
-            res = re.search('datasets/(.*)/tables/(.*)', resource)
-            dataset = res.group(1)
-            view = res.group(2)
-            fetched_results.append(
-                {'type': 'view', 'parent': dataset, 'name': view, 'id': '{}.{}'.format(dataset, view)})
-        elif resultType == 'entry.model':
-            res = re.search('datasets/(.*)/tables/(.*)', resource)
-            dataset = res.group(1)
-            model = res.group(2)
-            fetched_results.append(
-                {'type': 'model', 'parent': dataset, 'name': model, 'id': '{}.{}'.format(dataset, model)})
+        formattedResult = format_search_result(resultType, resourceName)
+        fetched_results.append(formattedResult)
 
     return {'results': fetched_results}
 
@@ -102,35 +109,37 @@ def list_tables(client, dataset):
     tables = list(client.list_tables(dataset))
 
     return [{
-        'id': '{}.{}'.format(table.dataset_id, table.table_id),
-        'name': table.table_id
+        'id': '{}.{}.{}'.format(table.project, table.dataset_id, table.table_id),
+        'name': table.table_id,
+        'type': table.table_type,
     } for table in tables]
 
 
 def list_models(client, dataset):
     models = list(client.list_models(dataset))
     return [{
-        'id': '{}.{}'.format(model.dataset_id, model.model_id),
+        'id': '{}.{}.{}'.format(model.project, model.dataset_id, model.model_id),
         'name': model.model_id,
     } for model in models]
 
 
 def get_dataset_details(client, dataset_id):
-  dataset = client.get_dataset(dataset_id)
-  return {
-      'details': {
-          'id': "{}.{}".format(dataset.project, dataset.dataset_id),
-          'name': dataset.dataset_id,
-          'description': dataset.description,
-          'labels': ["\t{}: {}".format(label, value) for label, value in dataset.labels.items()] if dataset.labels else None,
-          'date_created': json.dumps(dataset.created.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
-          'default_expiration': dataset.default_table_expiration_ms,
-          'location': dataset.location,
-          'last_modified': json.dumps(dataset.modified.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
-          'project': dataset.project,
-          'link': dataset.self_link
-      }
-  }
+    dataset = client.get_dataset(dataset_id)
+    return {
+        'details': {
+            'id': "{}.{}".format(dataset.project, dataset.dataset_id),
+            'name': dataset.dataset_id,
+            'description': dataset.description,
+            'labels': ["\t{}: {}".format(label, value) for label, value in dataset.labels.items()] if dataset.labels else None,
+            'date_created': json.dumps(dataset.created.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
+            'default_expiration': dataset.default_table_expiration_ms,
+            'location': dataset.location,
+            'last_modified': json.dumps(dataset.modified.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
+            'project': dataset.project,
+            'link': dataset.self_link
+        }
+    }
+
 
 def get_schema(schema):
     return [{
@@ -140,26 +149,37 @@ def get_schema(schema):
         'mode': field.mode
     } for field in schema]
 
+
 def get_table_details(client, table_id):
-  table = client.get_table(table_id)
-  return {
-      'details': {
-          'id': "{}.{}.{}".format(table.project, table.dataset_id, table.table_id),
-          'name': table.table_id,
-          'description': table.description,
-          'labels': ["\t{}: {}".format(label, value) for label, value in table.labels.items()] if table.labels else None,
-          'date_created': json.dumps(table.created.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
-          'expires': json.dumps(table.expires.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1] if table.expires else None,
-          'location': table.location,
-          'last_modified': json.dumps(table.modified.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
-          'project': table.project,
-          'dataset': table.dataset_id,
-          'link': table.self_link,
-          'num_rows': table.num_rows,
-          'num_bytes': table.num_bytes,
-          'schema': get_schema(table.schema)
-      }
-  }
+    table = client.get_table(table_id)
+    return {
+        'details': {
+            'id': "{}.{}.{}".format(table.project, table.dataset_id, table.table_id),
+            'name': table.table_id,
+            'description': table.description,
+            'labels': ["\t{}: {}".format(label, value) for label, value in table.labels.items()] if table.labels else None,
+            'date_created': json.dumps(table.created.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
+            'expires': json.dumps(table.expires.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1] if table.expires else None,
+            'location': table.location,
+            'last_modified': json.dumps(table.modified.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1],
+            'project': table.project,
+            'dataset': table.dataset_id,
+            'link': table.self_link,
+            'num_rows': table.num_rows,
+            'num_bytes': table.num_bytes,
+            'schema': get_schema(table.schema)
+        }
+    }
+
+
+def get_table_preview(client, table_id):
+    table = client.get_table(table_id)
+    rows = client.list_rows(table, max_results=100)
+    return {
+        'fields': [field.name for field in rows.schema],
+        'rows': [row.values() for row in rows]
+    }
+
 
 class ListHandler(APIHandler):
     """Handles requests for list of BigQuery elements."""
@@ -230,21 +250,68 @@ class DatasetDetailsHandler(APIHandler):
 
 
 class TableDetailsHandler(APIHandler):
-  """Handles requests for table metadata."""
-  bigquery_client = None
-  
-  def post(self, *args, **kwargs):
-    try:
-      self.bigquery_client = create_bigquery_client()
-      post_body = self.get_json_body()
+    """Handles requests for table metadata."""
+    bigquery_client = None
 
-      self.finish(get_table_details(self.bigquery_client, post_body['tableId']))
+    def post(self, *args, **kwargs):
+        try:
+            self.bigquery_client = create_bigquery_client()
+            post_body = self.get_json_body()
 
-    except Exception as e:
-      app_log.exception(str(e))
-      self.set_status(500, str(e))
-      self.finish({
-          'error': {
-              'message': str(e)
-          }
-      })
+            self.finish(get_table_details(
+                self.bigquery_client, post_body['tableId']))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({
+                'error': {
+                    'message': str(e)
+                }
+            })
+
+
+class TablePreviewHandler(APIHandler):
+    """"Handles request for table preview."""
+    bigquery_client = None
+
+    @gen.coroutine
+    def post(self, *args, **kwargs):
+        try:
+            self.bigquery_client = create_bigquery_client()
+            post_body = self.get_json_body()
+
+            self.finish(get_table_preview(
+                self.bigquery_client, post_body['tableId']))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({
+                'error': {
+                    'message': str(e)
+                }
+            })
+
+
+class TablePreviewHandler(APIHandler):
+    """"Handles request for table preview."""
+    bigquery_client = None
+
+    @gen.coroutine
+    def post(self, *args, **kwargs):
+        try:
+            self.bigquery_client = create_bigquery_client()
+            post_body = self.get_json_body()
+
+            self.finish(get_table_preview(
+                self.bigquery_client, post_body['tableId']))
+
+        except Exception as e:
+            app_log.exception(str(e))
+            self.set_status(500, str(e))
+            self.finish({
+                'error': {
+                    'message': str(e)
+                }
+            })

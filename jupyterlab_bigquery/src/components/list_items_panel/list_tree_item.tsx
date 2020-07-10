@@ -92,6 +92,11 @@ export function BuildTree(project, context) {
     );
   };
 
+  const openViewDetails = (event, view) => {
+    event.stopPropagation();
+    // TODO: Create view widget
+  };
+
   const getIcon = iconType => {
     return (
       <Icon style={{ display: 'flex', alignContent: 'center' }}>
@@ -101,28 +106,58 @@ export function BuildTree(project, context) {
   };
 
   const renderTables = table => {
-    const contextMenuItems = [
+    const tableContextMenuItems = [
       {
         label: 'Copy Table ID',
         handler: dataTreeItem => copyID(dataTreeItem),
       },
     ];
+
+    const viewContextMenuItems = [
+      {
+        label: 'Copy View ID',
+        handler: dataTreeItem => copyID(dataTreeItem),
+      },
+    ];
+
     return (
-      <TreeItem
-        nodeId={table.id}
-        icon={getIcon('Table')}
-        label={
-          <ContextMenu
-            items={contextMenuItems.map(item => ({
-              label: item.label,
-              onClick: () => item.handler(table),
-            }))}
-          >
-            <Typography>{table.name}</Typography>
-          </ContextMenu>
-        }
-        onDoubleClick={event => openTableDetails(event, table)}
-      />
+      <div>
+        {table.type === 'TABLE' ? (
+          <TreeItem
+            nodeId={table.id}
+            icon={getIcon('Table')}
+            label={
+              <ContextMenu
+                items={tableContextMenuItems.map(item => ({
+                  label: item.label,
+                  onClick: () => item.handler(table),
+                }))}
+              >
+                <Typography>{table.name}</Typography>
+              </ContextMenu>
+            }
+            onDoubleClick={event => openTableDetails(event, table)}
+          />
+        ) : table.type === 'VIEW' ? (
+          <TreeItem
+            nodeId={table.id}
+            icon={getIcon('View')}
+            label={
+              <ContextMenu
+                items={viewContextMenuItems.map(item => ({
+                  label: item.label,
+                  onClick: () => item.handler(table),
+                }))}
+              >
+                <Typography>{table.name}</Typography>
+              </ContextMenu>
+            }
+            onDoubleClick={event => openViewDetails(event, table)}
+          />
+        ) : (
+          <div>Table references an external data source</div>
+        )}
+      </div>
     );
   };
 

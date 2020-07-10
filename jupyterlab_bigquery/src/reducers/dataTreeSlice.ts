@@ -3,12 +3,14 @@ import { DataTree } from '../components/list_items_panel/service/list_items';
 
 export interface DataTreeState {
   data: DataTree;
+  currentProject: string;
 }
 
 const initialState: DataTreeState = {
   data: {
     projects: [],
   },
+  currentProject: '',
 };
 
 const dataTreeSlice = createSlice({
@@ -18,6 +20,7 @@ const dataTreeSlice = createSlice({
     updateDataTree(state, action: PayloadAction<DataTree>) {
       const dataTreeResult = action.payload;
       state.data = dataTreeResult;
+      state.currentProject = dataTreeResult.projects[0].name;
     },
   },
 });

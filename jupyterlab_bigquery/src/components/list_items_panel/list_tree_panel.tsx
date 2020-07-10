@@ -22,6 +22,7 @@ interface Props {
   isVisible: boolean;
   context: Context;
   updateDataTree: any;
+  currentProject: string;
 }
 
 export interface Context {
@@ -45,9 +46,18 @@ const localStyles = stylesheet({
     margin: 0,
     padding: '8px 12px',
     textTransform: 'uppercase',
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  queryButtonContainer: {
+    marginTop: 10,
+    display: 'flex',
+    flexGrow: 1,
   },
   editQueryButton: {
-    margin: 'auto',
+    margin: 20,
+    display: 'flex',
+    flexGrow: 0,
   },
   list: {
     margin: 0,
@@ -92,9 +102,16 @@ class ListItemsPanel extends React.Component<Props, State> {
   }
 
   handleKeyPress = event => {
+    const { currentProject } = this.props;
     if (event.key === 'Enter') {
       const searchKey = event.target.value;
-      this.search(searchKey, 'hwing-sandbox');
+      if (currentProject !== '') {
+        this.search(searchKey, currentProject);
+      } else {
+        console.warn(
+          'Error searching, wait until data tree loads and try again'
+        );
+      }
     }
   };
 
@@ -125,20 +142,22 @@ class ListItemsPanel extends React.Component<Props, State> {
         <div style={{ display: 'flex', flexDirection: 'row' }}>
           <header className={localStyles.header}>
             BigQuery in Notebooks
-            <Button
-              color="primary"
-              size="small"
-              variant="contained"
-              className={localStyles.editQueryButton}
-              onClick={() => {
-                WidgetManager.getInstance().launchWidget(
-                  QueryEditorTabWidget,
-                  'main'
-                );
-              }}
-            >
-              Edit Query
-            </Button>
+            <div className={localStyles.queryButtonContainer}>
+              <Button
+                color="primary"
+                size="small"
+                variant="contained"
+                className={localStyles.editQueryButton}
+                onClick={() => {
+                  WidgetManager.getInstance().launchWidget(
+                    QueryEditorTabWidget,
+                    'main'
+                  );
+                }}
+              >
+                Edit Query
+              </Button>
+            </div>
             <SearchBar
               handleKeyPress={this.handleKeyPress}
               handleClear={this.handleClear}
@@ -182,7 +201,8 @@ class ListItemsPanel extends React.Component<Props, State> {
 }
 
 const mapStateToProps = state => {
-  return {};
+  const currentProject = state.dataTree.currentProject;
+  return { currentProject };
 };
 const mapDispatchToProps = {
   updateDataTree,

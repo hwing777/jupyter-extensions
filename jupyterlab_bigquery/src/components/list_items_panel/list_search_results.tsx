@@ -165,7 +165,14 @@ export function BuildSearchResult(result, context) {
       >
         <TreeItem
           nodeId={dataset.id}
-          label={dataset.name}
+          label={
+            <div>
+              <Typography>{dataset.name}</Typography>
+              <Typography style={{ fontSize: 12, color: 'gray' }}>
+                Type: {dataset.type}
+              </Typography>
+            </div>
+          }
           onDoubleClick={() => openDatasetDetails(dataset)}
           className={localStyles.searchResultItem}
         />
