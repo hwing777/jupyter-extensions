@@ -277,3 +277,24 @@ class TablePreviewHandler(APIHandler):
               'message': str(e)
           }
       })
+
+class TablePreviewHandler(APIHandler):
+  """"Handles request for table preview."""
+  bigquery_client = None
+
+  @gen.coroutine
+  def post(self, *args, **kwargs):
+    try:
+      self.bigquery_client = create_bigquery_client()
+      post_body = self.get_json_body()
+
+      self.finish(get_table_preview(self.bigquery_client, post_body['tableId']))
+
+    except Exception as e:
+      app_log.exception(str(e))
+      self.set_status(500, str(e))
+      self.finish({
+          'error': {
+              'message': str(e)
+          }
+      })
