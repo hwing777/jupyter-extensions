@@ -96,9 +96,8 @@ class ListItemsPanel extends React.Component<Props, State> {
       });
     } catch (err) {
       console.warn('Error searching', err);
-    } finally {
-      this.setState({ isLoading: false });
     }
+    this.setState({ isLoading: false });
   }
 
   handleKeyPress = event => {
@@ -136,7 +135,7 @@ class ListItemsPanel extends React.Component<Props, State> {
   }
 
   render() {
-    const { isLoading, isSearching, searchResults } = this.state;
+    const { isLoading, hasLoaded, isSearching, searchResults } = this.state;
     return (
       <div className={localStyles.panel}>
         <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -158,11 +157,13 @@ class ListItemsPanel extends React.Component<Props, State> {
                 Edit Query
               </Button>
             </div>
-            <SearchBar
-              handleKeyPress={this.handleKeyPress}
-              handleClear={this.handleClear}
-              defaultText={'Search...'}
-            />
+            {hasLoaded && (
+              <SearchBar
+                handleKeyPress={this.handleKeyPress}
+                handleClear={this.handleClear}
+                defaultText={'Search...'}
+              />
+            )}
           </header>
         </div>
         {isLoading ? (

@@ -82,6 +82,11 @@ export function BuildSearchResult(result, context) {
     );
   };
 
+  const openViewDetails = view => {
+    event.stopPropagation();
+    // TODO: Create view widget
+  };
+
   const renderTable = table => {
     const contextMenuItems = [
       {
@@ -110,6 +115,40 @@ export function BuildSearchResult(result, context) {
             </div>
           }
           onDoubleClick={() => openTableDetails(table)}
+          className={localStyles.searchResultItem}
+        />
+      </ContextMenu>
+    );
+  };
+
+  const renderView = view => {
+    const contextMenuItems = [
+      {
+        label: 'Copy View ID',
+        handler: dataTreeItem => copyID(dataTreeItem),
+      },
+    ];
+    return (
+      <ContextMenu
+        items={contextMenuItems.map(item => ({
+          label: item.label,
+          onClick: () => item.handler(view),
+        }))}
+      >
+        <TreeItem
+          nodeId={view.id}
+          label={
+            <div>
+              <Typography>{view.name}</Typography>
+              <Typography style={{ fontSize: 12, color: 'gray' }}>
+                Dataset: {view.parent}
+              </Typography>
+              <Typography style={{ fontSize: 12, color: 'gray' }}>
+                Type: {view.type}
+              </Typography>
+            </div>
+          }
+          onDoubleClick={() => openViewDetails(view)}
           className={localStyles.searchResultItem}
         />
       </ContextMenu>
@@ -186,7 +225,9 @@ export function BuildSearchResult(result, context) {
         ? renderDataset(result)
         : result.type === 'model'
         ? renderModel(result)
-        : renderTable(result)}
+        : result.type === 'table'
+        ? renderTable(result)
+        : renderView(result)}
     </div>
   );
 }
