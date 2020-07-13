@@ -20,6 +20,7 @@ interface QueryTextEditorState {
   buttonState: ButtonStates;
   bytesProcessed: number | null;
   errorMsg: string | null;
+  height: number;
 }
 
 interface QueryTextEditorProps {
@@ -30,6 +31,7 @@ interface QueryTextEditorProps {
   iniQuery?: string;
   editorType?: QueryEditorType;
   queryFlags?: { [keys: string]: any };
+  width?: number;
 }
 
 interface QueryResponseType {
@@ -53,12 +55,14 @@ interface QueryRequestBodyType {
 
 const SQL_EDITOR_OPTIONS: editor.IEditorConstructionOptions = {
   lineNumbers: 'on',
-  automaticLayout: true,
   formatOnType: true,
   formatOnPaste: true,
   wordWrap: 'on',
   wrappingIndent: 'same',
   wrappingStrategy: 'advanced',
+  minimap: {
+    enabled: false,
+  },
 };
 
 const styleSheet = stylesheet({
@@ -133,6 +137,7 @@ class QueryTextEditor extends React.Component<
       buttonState: ButtonStates.READY,
       bytesProcessed: null,
       errorMsg: null,
+      height: 0,
     };
     this.pagedQueryService = new PagedService('query');
     this.timeoutAlarm = null;
@@ -144,8 +149,33 @@ class QueryTextEditor extends React.Component<
       .then(monacoInstance => (this.monacoInstance = monacoInstance));
   }
 
+  updateDimensions() {
+    this.editor.layout();
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions.bind(this));
+  }
+
   componentWillUnmount() {
     this.props.deleteQueryEntry(this.queryId);
+    window.removeEventListener('resize', this.updateDimensions.bind(this));
+  }
+
+  componentDidUpdate(
+    prevProps: QueryTextEditorProps,
+    prevState: QueryTextEditorState
+  ) {
+    if (
+      (prevProps.width !== this.props.width ||
+        prevState.height !== this.state.height) &&
+      this.editor
+    ) {
+      this.editor.layout({
+        width: this.props.width,
+        height: this.state.height,
+      });
+    }
   }
 
   handleButtonClick() {
@@ -210,6 +240,9 @@ class QueryTextEditor extends React.Component<
   }
 
   handleEditorDidMount(_, editor) {
+    if (this.editorRef.current) {
+      this.setState({ height: this.editorRef.current.clientHeight });
+    }
     this.editor = editor;
 
     this.editor.onKeyUp(() => {
@@ -390,6 +423,8 @@ class QueryTextEditor extends React.Component<
     return undefined;
   }
 
+  private editorRef = React.createRef<HTMLDivElement>();
+
   render() {
     const { iniQuery } = this.props;
 
@@ -410,6 +445,7 @@ class QueryTextEditor extends React.Component<
             ? styleSheet.wholeEditorInCell
             : styleSheet.wholeEditor
         }
+        ref={this.editorRef}
       >
         <div
           className={
@@ -442,9 +478,7 @@ class QueryTextEditor extends React.Component<
   }
 }
 
-const mapStateToProps = _ => {
-  return {};
-};
+const mapStateToProps = () => {};
 
 const mapDispatchToProps = {
   updateQueryResult,

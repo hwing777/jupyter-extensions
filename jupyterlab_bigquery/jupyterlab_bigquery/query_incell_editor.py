@@ -1,4 +1,4 @@
-from ipywidgets import DOMWidget
+from ipywidgets import DOMWidget, Layout
 from traitlets import Unicode, Any
 from IPython.core import magic_arguments
 from google.cloud.bigquery.dbapi import _helpers

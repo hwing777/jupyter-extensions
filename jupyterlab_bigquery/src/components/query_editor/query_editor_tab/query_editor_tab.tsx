@@ -8,6 +8,7 @@ import {
 
 interface QueryEditorTabProps {
   isVisible: boolean;
+  width?: number;
 }
 
 class QueryEditorTab extends React.Component<QueryEditorTabProps, {}> {
@@ -32,7 +33,7 @@ class QueryEditorTab extends React.Component<QueryEditorTabProps, {}> {
           height: '100%',
         }}
       >
-        <QueryTextEditor queryId={this.queryId} />
+        <QueryTextEditor queryId={this.queryId} width={this.props.width} />
         <QueryResults queryId={this.queryId} />
       </div>
     );

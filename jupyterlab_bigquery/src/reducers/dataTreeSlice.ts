@@ -7,6 +7,7 @@ import {
 
 export interface DataTreeState {
   data: { projects: {}; projectIds: string[] };
+  isOpen: boolean;
 }
 
 const initialState: DataTreeState = {
@@ -14,6 +15,7 @@ const initialState: DataTreeState = {
     projects: {},
     projectIds: [],
   },
+  isOpen: false,
 };
 
 const dataTreeSlice = createSlice({

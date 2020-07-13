@@ -29,6 +29,10 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
     this.queryFlags = JSON.parse(rawQueryFlags);
   }
 
+  updateDimensions() {
+    console.log('resized');
+  }
+
   render() {
     const { queries } = this.props;
 
@@ -37,7 +41,7 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
     const showResult = !!queryResult && queryResult.content.length > 0;
 
     return (
-      <div style={{ width: '75vw' }}>
+      <div style={{ width: '100%' }}>
         <QueryTextEditor
           queryId={this.queryId}
           iniQuery={this.iniQuery}
