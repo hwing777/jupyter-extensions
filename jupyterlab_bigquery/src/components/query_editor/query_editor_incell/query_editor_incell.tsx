@@ -1,35 +1,57 @@
 import React, { Component } from 'react';
-import QueryTextEditor from '../query_text_editor/query_text_editor';
-import { WidgetManager } from '../../../utils/widgetManager/widget_manager';
-import { EnhancedStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
+import QueryTextEditor, {
+  QueryResult,
+} from '../query_text_editor/query_text_editor';
+import { connect } from 'react-redux';
 import QueryResults from '../query_editor_tab/query_editor_results';
 import {
   QueryId,
   generateQueryId,
 } from '../../../reducers/queryEditorTabSlice';
 
-export class QueryEditorInCell extends Component {
+interface QueryEditorInCellProps {
+  update: (string, any) => void;
+  queryResult: QueryResult;
+}
+
+export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
   queryId: QueryId;
-  store: EnhancedStore;
 
   constructor(pros) {
     super(pros, QueryEditorInCell);
 
-    this.store = WidgetManager.getInstance().getStore();
     this.queryId = generateQueryId();
   }
 
   render() {
+    const { update, queryResult } = this.props;
+
+    const jsonLoad = JSON.stringify(queryResult);
+    console.log(jsonLoad);
+    update('result', jsonLoad);
+
     return (
-      <Provider store={this.store}>
-        <div style={{ width: '80vw' }}>
-          <QueryTextEditor queryId={this.queryId} />
-          <QueryResults queryId={this.queryId} />
-        </div>
-      </Provider>
+      <div style={{ width: '80vw' }}>
+        <QueryTextEditor queryId={this.queryId} />
+        <QueryResults queryId={this.queryId} />
+      </div>
     );
   }
 }
 
-export default QueryEditorInCell;
+const mapStateToProps = (state, ownProps) => {
+  const queryId = ownProps.queryId;
+  let queryResult = state.queryEditorTab.queries[queryId];
+
+  if (!queryResult) {
+    queryResult = {
+      content: [],
+      labels: [],
+      bytesProcessed: null,
+      queryId: queryId,
+    } as QueryResult;
+  }
+  return { queryResult: queryResult };
+};
+
+export default connect(mapStateToProps)(QueryEditorInCell);
