@@ -32,10 +32,6 @@ export const localStyles = stylesheet({
   },
   detailsBody: {
     fontSize: '13px',
-    flex: 1,
-    minHeight: 0,
-    display: 'flex',
-    flexDirection: 'column',
     marginTop: '24px',
   },
   labelContainer: {
@@ -51,11 +47,6 @@ export const localStyles = stylesheet({
   row: {
     display: 'flex',
     padding: '6px',
-  },
-  scrollable: {
-    flex: 1,
-    minHeight: 0,
-    overflow: 'auto',
   },
 });
 
@@ -86,6 +77,7 @@ interface Props {
 
 export const DetailsPanel: React.SFC<Props> = props => {
   const { details, rows, detailsType } = props;
+
   return (
     <div className={localStyles.panel}>
       <div className={localStyles.detailsBody}>
@@ -111,7 +103,9 @@ export const DetailsPanel: React.SFC<Props> = props => {
           </Grid>
 
           <Grid item xs={12}>
-            <div className={localStyles.title}>Dataset info</div>
+            <div className={localStyles.title}>
+              {detailsType === 'table' ? 'Table' : 'Dataset'} info
+            </div>
             {rows.map((row, index) => (
               <div
                 key={index}
@@ -134,8 +128,8 @@ export const DetailsPanel: React.SFC<Props> = props => {
         )}
 
         {detailsType === 'table' && (
-          <div className={localStyles.scrollable}>
-            {details.schema ? (
+          <div>
+            {details.schema && details.schema.length > 0 ? (
               <Table
                 size="small"
                 style={{ width: 'auto', tableLayout: 'auto' }}
