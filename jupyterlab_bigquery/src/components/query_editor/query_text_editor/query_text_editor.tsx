@@ -68,9 +68,15 @@ const styleSheet = stylesheet({
   queryTextEditor: {
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
     minHeight: '300px',
-    height: '30vh',
+    // height: '30vh',
+    flex: 1,
   },
   wholeEditor: {
+    // 4/9 of panel height (in relation to results)
+    flex: 4,
+    minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
   },
   optionalText: {
@@ -101,7 +107,7 @@ enum ButtonStates {
 class QueryTextEditor extends React.Component<
   QueryTextEditorProps,
   QueryTextEditorState
-> {
+  > {
   editor: editor.IStandaloneCodeEditor;
   job: PagedJob<QueryRequestBodyType, QueryResponseType>;
   timeoutAlarm: NodeJS.Timeout;
@@ -272,10 +278,11 @@ class QueryTextEditor extends React.Component<
         <Typography
           className={styleSheet.optionalText}
           variant="body1"
+          style={{ marginRight: '10px' }}
           {...config}
         >
           {text}
-        </Typography>
+        </Typography >
       );
     }
 
