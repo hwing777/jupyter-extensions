@@ -6,6 +6,7 @@ from jupyterlab_bigquery.details_handler import DatasetDetailsHandler, TablePrev
 from jupyterlab_bigquery.version import VERSION
 from jupyterlab_bigquery.pagedAPI_handler import PagedQueryHandler
 from jupyterlab_bigquery.query_incell_editor import QueryIncellEditor, _cell_magic
+from jupyterlab_bigquery.list_items_handler import handlers
 
 __version__ = VERSION
 
