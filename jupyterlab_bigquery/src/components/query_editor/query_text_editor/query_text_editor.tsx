@@ -107,7 +107,7 @@ enum ButtonStates {
 class QueryTextEditor extends React.Component<
   QueryTextEditorProps,
   QueryTextEditorState
-  > {
+> {
   editor: editor.IStandaloneCodeEditor;
   job: PagedJob<QueryRequestBodyType, QueryResponseType>;
   timeoutAlarm: NodeJS.Timeout;
@@ -282,7 +282,7 @@ class QueryTextEditor extends React.Component<
           {...config}
         >
           {text}
-        </Typography >
+        </Typography>
       );
     }
 

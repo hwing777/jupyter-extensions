@@ -86,8 +86,8 @@ export default class TablePreviewPanel extends React.Component<Props, State> {
               <BQTable rows={rows} fields={fields} />
             </div>
           ) : (
-              <div>This table is empty.</div>
-            )}
+            <div>This table is empty.</div>
+          )}
         </div>
       );
     }

@@ -140,10 +140,7 @@ export class BQTable extends React.Component<Props, State> {
     return (
       <>
         <div className={localStyles.scrollable}>
-          <Table
-            size="small"
-            style={{ width: 'auto', tableLayout: 'auto' }}
-          >
+          <Table size="small" style={{ width: 'auto', tableLayout: 'auto' }}>
             <TableHead className={localStyles.tableHeader}>
               <TableRow>
                 {fields.map((field, index) => (
@@ -153,21 +150,14 @@ export class BQTable extends React.Component<Props, State> {
             </TableHead>
             <TableBody>
               {rows
-                .slice(
-                  page * rowsPerPage,
-                  page * rowsPerPage + rowsPerPage
-                )
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, indexRow) => (
                   <TableRow key={'preview_row_' + indexRow}>
-                    <TableCell>
-                      {page * rowsPerPage + indexRow + 1}
-                    </TableCell>
+                    <TableCell>{page * rowsPerPage + indexRow + 1}</TableCell>
                     {row.map((cell, indexCell) => (
                       <TableCell
                         className={localStyles.tableCell}
-                        key={
-                          'preview_row_' + indexRow + '_cell' + indexCell
-                        }
+                        key={'preview_row_' + indexRow + '_cell' + indexCell}
                       >
                         {cell}
                       </TableCell>
@@ -191,6 +181,5 @@ export class BQTable extends React.Component<Props, State> {
         />
       </>
     );
-
   }
 }

@@ -11,5 +11,5 @@ const localStyles = stylesheet({
 });
 
 export const Header: React.SFC<{ text: string }> = props => {
-  return <header className={localStyles.header}>{props.text}</header>
-}
+  return <header className={localStyles.header}>{props.text}</header>;
+};
