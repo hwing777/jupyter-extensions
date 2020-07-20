@@ -83,6 +83,9 @@ export default class TablePreviewPanel extends React.Component<Props, State> {
         <div className={localStyles.previewBody}>
           {rows.length > 0 ? (
             <div className={localStyles.previewBody}>
+              <br />
+              <div>(First 100 rows)</div>
+              <br />
               <BQTable rows={rows} fields={fields} />
             </div>
           ) : (
