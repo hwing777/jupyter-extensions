@@ -20,6 +20,7 @@ def load_jupyter_server_extension(nb_server_app):
       Args:
           nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
       """
+
     host_pattern = '.*$'
     app = nb_server_app.web_app
     gcp_v1_endpoint = url_path_join(app.settings['base_url'], 'bigquery', 'v1')
