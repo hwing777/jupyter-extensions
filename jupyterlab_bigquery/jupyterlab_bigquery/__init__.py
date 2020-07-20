@@ -1,3 +1,4 @@
+"""Initialize server endpoints for extension"""
 from notebook.utils import url_path_join
 
 
@@ -17,34 +18,34 @@ def _jupyter_server_extension_paths():
 
 def load_jupyter_server_extension(nb_server_app):
   """
-      Called when the extension is loaded.
-      Args:
-          nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
-      """
+    Called when the extension is loaded.
+    Args:
+        nb_server_app (NotebookWebApplication): handle to the Notebook webserver instance.
+  """
 
-    host_pattern = '.*$'
-    app = nb_server_app.web_app
-    gcp_v1_endpoint = url_path_join(app.settings['base_url'], 'bigquery', 'v1')
+  host_pattern = '.*$'
+  app = nb_server_app.web_app
+  gcp_v1_endpoint = url_path_join(app.settings['base_url'], 'bigquery', 'v1')
+
+  def make_endpoint(endPoint, handler):
+    return url_path_join(gcp_v1_endpoint, endPoint) + '(.*)', handler
 
 
-    def make_endpoint(endPoint, handler):
-        return url_path_join(gcp_v1_endpoint, endPoint) + '(.*)', handler
-
-    app.add_handlers(
-        host_pattern,
-        [
-            (url_path_join(gcp_v1_endpoint, k) + "(.*)", v)
-            for (k, v) in Handlers.get().items()
-        ],
-    )
-    app.add_handlers(host_pattern, [
-        # TODO(cbwilkes): Add auth checking if needed.
-        # (url_path_join(gcp_v1_endpoint, auth'), AuthHandler)
-        make_endpoint('datasetdetails', DatasetDetailsHandler),
-        make_endpoint('tabledetails', TableDetailsHandler),
-        make_endpoint('tablepreview', TablePreviewHandler),
-        make_endpoint('query', PagedQueryHandler)
-    ])
+  app.add_handlers(
+      host_pattern,
+      [(url_path_join(gcp_v1_endpoint, k) + "(.*)", v)
+      for (k, v) in Handlers.get().items()],
+  )
+  app.add_handlers(
+      host_pattern,
+      [
+          # TODO(cbwilkes): Add auth checking if needed.
+          # (url_path_join(gcp_v1_endpoint, auth'), AuthHandler)
+          make_endpoint('datasetdetails', DatasetDetailsHandler),
+          make_endpoint('tabledetails', TableDetailsHandler),
+          make_endpoint('tablepreview', TablePreviewHandler),
+          make_endpoint('query', PagedQueryHandler)
+      ])
 
     
 def load_ipython_extension(ipython):

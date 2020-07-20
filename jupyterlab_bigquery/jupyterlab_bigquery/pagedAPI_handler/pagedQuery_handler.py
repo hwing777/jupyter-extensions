@@ -4,6 +4,7 @@ import json
 from jupyterlab_bigquery.details_handler import format_preview_fields, format_preview_rows
 
 
+
 class PagedQueryHandler(PagedAPIHandler):
   client = bigquery.Client()
 
