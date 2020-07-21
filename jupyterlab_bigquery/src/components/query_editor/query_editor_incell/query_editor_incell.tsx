@@ -11,7 +11,7 @@ import {
 import { DOMWidgetView } from '@jupyter-widgets/base';
 
 interface QueryEditorInCellProps {
-  queryResult: QueryResult;
+  queries: { [key: string]: QueryResult };
   ipyView: DOMWidgetView;
 }
 
@@ -34,8 +34,9 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
   }
 
   render() {
-    const { queryResult } = this.props;
+    const { queries } = this.props;
 
+    const queryResult = queries[this.queryId];
     // eslint-disable-next-line no-extra-boolean-cast
     const showResult = !!queryResult;
 
@@ -56,11 +57,8 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  const queryId = ownProps.queryId;
-  const queryResult = state.queryEditorTab.queries[queryId];
-
-  return { queryResult: queryResult };
+const mapStateToProps = state => {
+  return { queries: state.queryEditorTab.queries };
 };
 
 export default connect(mapStateToProps)(QueryEditorInCell);
