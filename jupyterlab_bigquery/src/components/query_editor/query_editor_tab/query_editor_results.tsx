@@ -16,7 +16,9 @@ const localStyles = stylesheet({
     flexDirection: 'column',
   },
   inCell: {
-    minHeight: '300px',
+    height: '350px',
+    display: 'flex',
+    flexDirection: 'column',
   },
 });
 
@@ -56,7 +58,11 @@ class QueryResults extends Component<QueryResultsProps, QueryResultsState> {
         }
       >
         <Header text="Query results" />
-        {fields.length > 0 ? <BQTable fields={fields} rows={rows} /> : <></>}
+        {fields.length > 0 ? (
+          <BQTable fields={fields} rows={rows} location="inCell" />
+        ) : (
+          <></>
+        )}
       </div>
     );
   }

@@ -44,6 +44,7 @@ const localStyles = stylesheet({
 interface Props {
   rows: (string | number)[][];
   fields: string[];
+  location?: string;
 }
 
 interface State {
