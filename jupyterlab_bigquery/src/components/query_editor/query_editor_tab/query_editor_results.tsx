@@ -15,6 +15,9 @@ const localStyles = stylesheet({
     display: 'flex',
     flexDirection: 'column',
   },
+  inCell: {
+    minHeight: '300px',
+  },
 });
 
 interface QueryResultsState {
@@ -25,6 +28,7 @@ interface QueryResultsState {
 interface QueryResultsProps {
   queryResult: QueryResult;
   queryId: QueryId;
+  location?: string;
 }
 
 class QueryResults extends Component<QueryResultsProps, QueryResultsState> {
@@ -44,7 +48,13 @@ class QueryResults extends Component<QueryResultsProps, QueryResultsState> {
     const rows = this.props.queryResult.content;
 
     return (
-      <div className={localStyles.resultsContainer}>
+      <div
+        className={
+          this.props.location === 'inCell'
+            ? localStyles.inCell
+            : localStyles.resultsContainer
+        }
+      >
         <Header text="Query results" />
         {fields.length > 0 ? <BQTable fields={fields} rows={rows} /> : <></>}
       </div>
