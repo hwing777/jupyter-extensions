@@ -127,9 +127,12 @@ def get_table_details(client, table_id):
 
 def format_preview_field(formatted_fields, field, field_name):
   if field.field_type == 'RECORD':
-    for record_entry in field.fields:
-      format_preview_field(formatted_fields, record_entry,
-                           field_name + field.name + ".")
+    if field.mode == 'REPEATED':
+      formatted_fields.append(field.name)
+    else:
+      for record_entry in field.fields:
+        format_preview_field(formatted_fields, record_entry,
+                             field_name + field.name + ".")
   else:
     formatted_fields.append(field_name + field.name)
 
@@ -184,10 +187,7 @@ def format_preview_rows(rows, fields):
 
 def check_repeated(value, field, formatted_row):
   if field.mode == 'REPEATED':
-    if len(value) > 0:
-      handle_records(value[0], field, formatted_row)
-    else:
-      handle_records(None, field, formatted_row)
+    formatted_row.append(value.__str__())
   else:
     handle_records(value, field, formatted_row)
 
