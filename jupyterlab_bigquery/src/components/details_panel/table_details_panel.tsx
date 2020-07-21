@@ -1,5 +1,4 @@
 import * as React from 'react';
-
 import {
   TableDetailsService,
   TableDetails,
@@ -10,7 +9,7 @@ import { DetailsPanel } from './details_panel';
 interface Props {
   tableDetailsService: TableDetailsService;
   isVisible: boolean;
-  table_id: string;
+  tableId: string;
 }
 
 interface State {
@@ -36,6 +35,7 @@ function formatBytes(numBytes, numDecimals = 2) {
 }
 
 export default class TableDetailsPanel extends React.Component<Props, State> {
+  private mounted = false;
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -44,6 +44,14 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
       details: { details: {} } as TableDetails,
       rows: [],
     };
+  }
+
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -56,33 +64,48 @@ export default class TableDetailsPanel extends React.Component<Props, State> {
 
   private async getDetails() {
     try {
-      this.setState({ isLoading: true });
+      if (this.mounted) {
+        this.setState({ isLoading: true });
+      }
+
       const details = await this.props.tableDetailsService.listTableDetails(
-        this.props.table_id
+        this.props.tableId
       );
 
       const detailsObj = details.details;
       const rows = [
         { name: 'Table ID', value: detailsObj.id },
-        { name: 'Table size', value: formatBytes(detailsObj.num_bytes) },
-        { name: 'Number of rows', value: detailsObj.num_rows.toLocaleString() },
+        {
+          name: 'Table size',
+          value: formatBytes(detailsObj.num_bytes),
+        },
+        {
+          name: 'Number of rows',
+          value: detailsObj.num_rows.toLocaleString(),
+        },
         { name: 'Created', value: detailsObj.date_created },
         {
           name: 'Table expiration',
-          value: detailsObj.expiration ? detailsObj.expiration : 'Never',
+          value: detailsObj.expires ? detailsObj.expires : 'Never',
         },
-        { name: 'Last modified', value: detailsObj.last_modified },
+        {
+          name: 'Last modified',
+          value: detailsObj.last_modified,
+        },
         {
           name: 'Data location',
           value: detailsObj.location ? detailsObj.location : 'None',
         },
       ];
-
-      this.setState({ hasLoaded: true, details, rows });
+      if (this.mounted) {
+        this.setState({ hasLoaded: true, details, rows });
+      }
     } catch (err) {
       console.warn('Error retrieving table details', err);
     } finally {
-      this.setState({ isLoading: false });
+      if (this.mounted) {
+        this.setState({ isLoading: false });
+      }
     }
   }
 

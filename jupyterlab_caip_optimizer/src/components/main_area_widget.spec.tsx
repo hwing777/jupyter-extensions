@@ -5,6 +5,12 @@ jest.mock('react-redux', () => ({
   Provider: ({ store, children }: any) => children,
 }));
 jest.mock('../store/view');
+jest.mock('./dashboard', () => ({
+  Dashboard: () => <div>Dashboard Component</div>,
+}));
+jest.mock('./create_study', () => ({
+  CreateStudy: () => <div>Create Study Component</div>,
+}));
 import * as React from 'react';
 import { shallow, mount } from 'enzyme';
 import { close as reduxClose } from '../store/view';
@@ -13,19 +19,11 @@ import { ViewManager, MainAreaWidget } from './main_area_widget';
 describe('ViewManager', () => {
   it('renders dashboard page', () => {
     const viewManager = shallow(<ViewManager data={{ view: 'dashboard' }} />);
-    expect(viewManager).toMatchInlineSnapshot(`
-      <Fragment>
-        Dashboard
-      </Fragment>
-    `);
+    expect(viewManager).toMatchInlineSnapshot(`<Dashboard />`);
   });
   it('renders the create study page', () => {
     const viewManager = shallow(<ViewManager data={{ view: 'createStudy' }} />);
-    expect(viewManager).toMatchInlineSnapshot(`
-      <Fragment>
-        Create A Study
-      </Fragment>
-    `);
+    expect(viewManager).toMatchInlineSnapshot(`<CreateStudy />`);
   });
   it('renders the study details page', () => {
     const viewManager = shallow(

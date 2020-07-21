@@ -3,6 +3,8 @@ import { ReactWidget } from '@jupyterlab/apputils';
 import { store, RootState } from '../store/store';
 import { Provider, connect } from 'react-redux';
 import { close, ViewType } from '../store/view';
+import { CreateStudy } from './create_study';
+import { Dashboard } from './dashboard';
 
 const mapStateToProps = (state: RootState) => ({
   data: state.view.data,
@@ -15,9 +17,9 @@ export const ViewManager = ({ data }: { data: ViewType }) => {
   // TODO: add custom components
   switch (data.view) {
     case 'dashboard':
-      return <>Dashboard</>;
+      return <Dashboard />;
     case 'createStudy':
-      return <>Create A Study</>;
+      return <CreateStudy />;
     case 'studyDetails':
       return <>Study ID: {data.studyId}</>;
   }

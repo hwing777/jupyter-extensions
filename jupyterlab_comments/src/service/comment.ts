@@ -14,78 +14,82 @@
  * limitations under the License.
  */
 
-export interface DetachedComment extends Comment {
-    //default
-}
+import { timeAgo } from './timestamp';
+
+export type DetachedComment = Comment;
 
 export interface CodeReviewComment extends Comment {
-    request: ReviewRequest,
-    revision: any,
+  request: ReviewRequest;
+  revision: any;
 }
 
 export interface Comment {
-    author: any,
-    text: any,
-    timestamp: string,
-    range: any,
-    hash: any,
-    children?: any;
-    parent?: any,
+  author: any;
+  text: any;
+  timestamp: string;
+  range: any;
+  hash: any;
+  children?: any;
+  parent?: any;
 }
 
 export interface ReviewRequest {
-    timestamp: any,
-    reviewRef: string,
-    targetRef: string,
-    requester: string,
-    description: any,
-    baseCommit: any,
+  timestamp: any;
+  reviewRef: string;
+  targetRef: string;
+  requester: string;
+  description: any;
+  baseCommit: any;
 }
 
-export function createDetachedCommentFromJSON(obj : any) : DetachedComment {
-    const content = obj.comment;
-    const hash = obj.hash;
-    const children = obj.children;
-    var timestamp : Date = new Date(parseInt(content.timestamp) * 1000);
-    var timestampString = timestamp.toDateString();
-    let comment : DetachedComment = {
-      author: content.author,
-      text: content.description,
-      timestamp: timestampString,
-      range: content.location.range,
-      hash: hash,
-    };
-    if (children) {
-      comment.children = children;
-    }
-    if (content.parent) {
-      comment.parent = parent;
-    }
-    return comment;
+export function createDetachedCommentFromJSON(obj: any): DetachedComment {
+  const content = obj.comment;
+  const hash = obj.hash;
+  const children = obj.children;
+  const now = new Date();
+  const current = now.getTime();
+  const timestampString = timeAgo(current, parseInt(content.timestamp) * 1000);
+  const comment: DetachedComment = {
+    author: content.author,
+    text: content.description,
+    timestamp: timestampString,
+    range: content.location.range,
+    hash: hash,
+  };
+  if (children) {
+    comment.children = children;
+  }
+  if (content.parent) {
+    comment.parent = parent;
+  }
+  return comment;
 }
 
-export function createReviewCommentFromJSON(obj : any, revision: any, request: any) : CodeReviewComment {
-    const content = obj.comment;
-    const hash = obj.hash;
-    const children = obj.children;
-    var timestamp : Date = new Date(parseInt(content.timestamp) * 1000);
-    var timestampString = timestamp.toDateString();
-    let comment : CodeReviewComment = {
-      author: content.author,
-      text: content.description,
-      timestamp: timestampString,
-      range: content.location.range,
-      hash: hash,
-      revision: revision,
-      request: request,
-    };
-    if (children) {
-      comment.children = children;
-    }
-    if (content.parent) {
-      comment.parent = parent;
-    }
-    return comment;
+export function createReviewCommentFromJSON(
+  obj: any,
+  revision: any,
+  request: any
+): CodeReviewComment {
+  const content = obj.comment;
+  const hash = obj.hash;
+  const children = obj.children;
+  const now = new Date();
+  const current = now.getTime();
+  const timestampString = timeAgo(current, parseInt(content.timestamp) * 1000);
+  const comment: CodeReviewComment = {
+    author: content.author,
+    text: content.description,
+    timestamp: timestampString,
+    range: content.location.range,
+    hash: hash,
+    revision: revision,
+    request: request,
+  };
+  if (children) {
+    comment.children = children;
+  }
+  if (content.parent) {
+    comment.parent = parent;
+  }
+  return comment;
 }
-
-
