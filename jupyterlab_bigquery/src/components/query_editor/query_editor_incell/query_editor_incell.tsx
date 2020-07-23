@@ -41,7 +41,7 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
     const showResult = !!queryResult;
 
     return (
-      <div style={{ width: '75vw' }}>
+      <div style={{ width: '100%' }}>
         <QueryTextEditor
           queryId={this.queryId}
           iniQuery={this.iniQuery}
