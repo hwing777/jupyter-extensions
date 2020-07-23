@@ -68,7 +68,7 @@ const styleSheet = stylesheet({
   },
   queryTextEditor: {
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
-    minHeight: '300px',
+    minHeight: '100px',
     flex: 1,
   },
   queryTextEditorInCell: {
@@ -87,12 +87,6 @@ const styleSheet = stylesheet({
   wholeEditorInCell: {
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
   },
-  optionalText: {
-    marginRight: '10px',
-    marginLeft: '10px',
-    alignSelf: 'center',
-    justifySelf: 'center',
-  },
   pendingStatus: {
     display: 'flex',
     flexDirection: 'row',
@@ -101,8 +95,8 @@ const styleSheet = stylesheet({
   buttonInfoBar: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end',
     margin: '10px',
+    marginLeft: '24px',
   },
 });
 
@@ -252,7 +246,7 @@ class QueryTextEditor extends React.Component<
         color = 'default';
         content = (
           <div className={styleSheet.pendingStatus}>
-            <CircularProgress size="75%" style={{ alignSelf: 'center' }} />
+            <CircularProgress size="70%" style={{ alignSelf: 'center' }} />
             <Typography variant="button">Cancel</Typography>
           </div>
         );
@@ -284,10 +278,13 @@ class QueryTextEditor extends React.Component<
     if (!!text) {
       return (
         <Typography
-          className={styleSheet.optionalText}
           variant="body1"
-          style={{ marginRight: '10px' }}
           {...config}
+          style={{
+            marginLeft: '14px',
+            alignSelf: 'center',
+            justifySelf: 'center',
+          }}
         >
           {text}
         </Typography>
@@ -337,12 +334,12 @@ class QueryTextEditor extends React.Component<
         </div>
 
         <div className={styleSheet.buttonInfoBar}>
+          {this.renderButton()}
+          {this.renderOptionalText(readableSize)}
           {this.renderOptionalText(errMsg, {
             variant: 'caption',
             color: 'error',
           })}
-          {this.renderOptionalText(readableSize)}
-          {this.renderButton()}
         </div>
       </div>
     );
