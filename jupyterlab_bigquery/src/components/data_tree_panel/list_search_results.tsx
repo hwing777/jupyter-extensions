@@ -8,7 +8,7 @@ import { stylesheet } from 'typestyle';
 import { Clipboard } from '@jupyterlab/apputils';
 
 import { SearchResult } from './service/search_items';
-import { Context } from './list_tree_panel';
+import { Context } from './data_tree_panel';
 import { DatasetDetailsWidget } from '../details_panel/dataset_details_widget';
 import { DatasetDetailsService } from '../details_panel/service/list_dataset_details';
 import { TableDetailsWidget } from '../details_panel/table_details_widget';

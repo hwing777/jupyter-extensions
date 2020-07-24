@@ -3,7 +3,7 @@ import {
   DataTree,
   Project,
   Dataset,
-} from '../components/list_items_panel/service/list_items';
+} from '../components/data_tree_panel/service/tree_items';
 
 export interface DataTreeState {
   data: { projects: {}; projectIds: string[] };

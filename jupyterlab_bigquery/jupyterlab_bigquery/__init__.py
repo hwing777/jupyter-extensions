@@ -2,7 +2,7 @@
 from notebook.utils import url_path_join
 
 
-from jupyterlab_bigquery.list_items_handler import Handlers
+from jupyterlab_bigquery.data_tree_handler import Handlers
 from jupyterlab_bigquery.details_handler import DatasetDetailsHandler, TablePreviewHandler, TableDetailsHandler
 from jupyterlab_bigquery.version import VERSION
 from jupyterlab_bigquery.pagedAPI_handler import PagedQueryHandler

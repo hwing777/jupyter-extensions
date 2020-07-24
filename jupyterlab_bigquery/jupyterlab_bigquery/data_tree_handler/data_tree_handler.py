@@ -1,9 +1,9 @@
 # Lint as: python3
 """Decorators that create handlers for the data tree"""
 
-import jupyterlab_bigquery.list_items_handler.create_handler
-from jupyterlab_bigquery.list_items_handler.service import BigQueryService
-from jupyterlab_bigquery.list_items_handler.create_handler import _handler
+import jupyterlab_bigquery.data_tree_handler.create_handler
+from jupyterlab_bigquery.data_tree_handler.service import BigQueryService
+from jupyterlab_bigquery.data_tree_handler.create_handler import _handler
 
 SCOPE = ("https://www.googleapis.com/auth/cloud-platform",)
 

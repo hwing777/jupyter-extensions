@@ -4,7 +4,7 @@ from unittest.mock import Mock, MagicMock
 
 from google.cloud.bigquery.dataset import DatasetListItem
 from google.cloud.bigquery.table import TableListItem
-from jupyterlab_bigquery.list_items_handler.service import BigQueryService
+from jupyterlab_bigquery.data_tree_handler.service import BigQueryService
 
 
 class TestListTree(unittest.TestCase):

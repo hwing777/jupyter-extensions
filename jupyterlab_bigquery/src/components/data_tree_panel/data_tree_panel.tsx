@@ -13,17 +13,14 @@ import {
   ListTablesService,
   ListModelsService,
   GetProjectService,
-} from './service/list_items';
-import ListProjectItem from './list_tree_item';
+} from './service/tree_items';
+import ListProjectItem from './list_tree_items';
 import { WidgetManager } from '../../utils/widgetManager/widget_manager';
 import ListSearchResults from './list_search_results';
 import { QueryEditorTabWidget } from '../query_editor/query_editor_tab/query_editor_tab_widget';
 import { updateDataTree, addProject } from '../../reducers/dataTreeSlice';
 import { SnackbarState } from '../../reducers/snackbarSlice';
-import {
-  SearchProjectsService,
-  SearchResult,
-} from '../list_items_panel/service/search_items';
+import { SearchProjectsService, SearchResult } from './service/search_items';
 import { SearchBar } from './search_bar';
 import { DialogComponent } from 'gcp_jupyterlab_shared';
 import CustomSnackbar from './snackbar';
@@ -102,7 +99,7 @@ const localStyles = stylesheet({
   },
 });
 
-class ListItemsPanel extends React.Component<Props, State> {
+class DataTreePanel extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -377,4 +374,4 @@ const mapDispatchToProps = {
   addProject,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ListItemsPanel);
+export default connect(mapStateToProps, mapDispatchToProps)(DataTreePanel);

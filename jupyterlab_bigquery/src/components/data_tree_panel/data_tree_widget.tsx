@@ -7,14 +7,14 @@ import {
   ListDatasetsService,
   ListTablesService,
   ListModelsService,
-} from './service/list_items';
-import ListItemsPanel from './list_tree_panel';
-import { Context } from './list_tree_panel';
+} from './service/tree_items';
+import DataTreePanel from './data_tree_panel';
+import { Context } from './data_tree_panel';
 
 /** Widget to be registered in the left-side panel. */
-export default class ListItemsWidget extends ReduxReactWidget {
-  id = 'listitems';
-  private visibleSignal = new Signal<ListItemsWidget, boolean>(this);
+export default class DataTreeWidget extends ReduxReactWidget {
+  id = 'datatree';
+  private visibleSignal = new Signal<DataTreeWidget, boolean>(this);
 
   constructor(
     private readonly listProjectsService: ListProjectsService,
@@ -40,7 +40,7 @@ export default class ListItemsWidget extends ReduxReactWidget {
     return (
       <UseSignal signal={this.visibleSignal}>
         {(_, isVisible) => (
-          <ListItemsPanel
+          <DataTreePanel
             isVisible={isVisible}
             listProjectsService={this.listProjectsService}
             listDatasetsService={this.listDatasetsService}

@@ -8,13 +8,13 @@ import {
 import { IJupyterWidgetRegistry } from '@jupyter-widgets/base';
 import * as QueryEditorInCellWidgetsExport from './components/query_editor/query_editor_incell/query_editor_incell_widget';
 
-import ListItemsWidget from './components/list_items_panel/list_tree_item_widget';
+import DataTreeWidget from './components/data_tree_panel/data_tree_widget';
 import {
   ListProjectsService,
   ListDatasetsService,
   ListTablesService,
   ListModelsService,
-} from './components/list_items_panel/service/list_items';
+} from './components/data_tree_panel/service/tree_items';
 import { WidgetManager } from './utils/widgetManager/widget_manager';
 import { ReduxReactWidget } from './utils/widgetManager/redux_react_widget';
 
@@ -30,7 +30,7 @@ async function activate(
   const listTablesService = new ListTablesService();
   const listModelsService = new ListModelsService();
   manager.launchWidget(
-    ListItemsWidget,
+    DataTreeWidget,
     'left',
     'ListItemWidget',
     (widget: ReduxReactWidget) => {
