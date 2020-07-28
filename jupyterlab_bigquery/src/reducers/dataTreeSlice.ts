@@ -11,8 +11,8 @@ export interface DataTreeState {
 
 const initialState: DataTreeState = {
   data: {
-    projects: {},
-    projectIds: [],
+    projects: JSON.parse(localStorage.getItem('projects')) || [],
+    projectIds: JSON.parse(localStorage.getItem('projectIds')) || [],
   },
 };
 
@@ -22,8 +22,21 @@ const dataTreeSlice = createSlice({
   reducers: {
     updateDataTree(state, action: PayloadAction<DataTree>) {
       const dataTreeResult = action.payload;
-      state.data.projects = dataTreeResult.projects;
-      state.data.projectIds = dataTreeResult.projectIds;
+      if (initialState.data.projectIds.length === 0) {
+        state.data.projects = dataTreeResult.projects;
+        state.data.projectIds = dataTreeResult.projectIds;
+        localStorage.setItem(
+          'projects',
+          JSON.stringify(dataTreeResult.projects)
+        );
+        localStorage.setItem(
+          'projectIds',
+          JSON.stringify(dataTreeResult.projectIds)
+        );
+      }
+
+      console.log('start state:');
+      console.log(initialState);
     },
     updateProject(state, action: PayloadAction<Project>) {
       const projectResult = action.payload;
@@ -42,6 +55,20 @@ const dataTreeSlice = createSlice({
           [projectId]: projectResult,
         };
         state.data.projectIds.push(projectId);
+
+        // Update local storage
+        // eslint-disable-next-line prefer-const
+        let newProjects = JSON.parse(localStorage.getItem('projects')) || [];
+        newProjects[projectId] = projectResult;
+        // eslint-disable-next-line prefer-const
+        let newProjectIds =
+          JSON.parse(localStorage.getItem('projectIds')) || [];
+        newProjectIds.push(projectId);
+        newProjectIds[projectId] = projectResult;
+        console.log('curr state:');
+        console.log(newProjects, newProjectIds);
+        localStorage.setItem('projects', JSON.stringify(newProjects));
+        localStorage.setItem('projectIds', JSON.stringify(newProjectIds));
       }
     },
     updateDataset(state, action: PayloadAction<Dataset>) {
