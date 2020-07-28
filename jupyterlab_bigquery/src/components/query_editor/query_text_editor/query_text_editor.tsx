@@ -1,5 +1,6 @@
+//@ts-nocheck
 import React from 'react';
-import Editor from '@monaco-editor/react';
+import Editor, { monaco, Monaco } from '@monaco-editor/react';
 import { connect } from 'react-redux';
 import {
   updateQueryResult,
@@ -15,6 +16,7 @@ import { stylesheet } from 'typestyle';
 import PagedService, { JobState } from '../../../utils/pagedAPI/paged_service';
 import PagedJob from '../../../utils/pagedAPI/pagedJob';
 import { QueryEditorType } from '../query_editor_tab/query_editor_results';
+import sqlFormatter from 'sql-formatter';
 
 interface QueryTextEditorState {
   buttonState: ButtonStates;
@@ -118,6 +120,7 @@ class QueryTextEditor extends React.Component<
   QueryTextEditorState
 > {
   editor: editor.IStandaloneCodeEditor;
+  monacoInstance: Monaco;
   job: PagedJob<QueryRequestBodyType, QueryResponseType>;
   timeoutAlarm: NodeJS.Timeout;
   queryId: QueryId;
@@ -134,6 +137,10 @@ class QueryTextEditor extends React.Component<
     this.pagedQueryService = new PagedService('query');
     this.timeoutAlarm = null;
     this.queryId = props.queryId;
+
+    monaco
+      .init()
+      .then(monacoInstance => (this.monacoInstance = monacoInstance));
   }
 
   componentWillUnmount() {
@@ -204,7 +211,7 @@ class QueryTextEditor extends React.Component<
   handleEditorDidMount(_, editor) {
     this.editor = editor;
 
-    this.editor.onKeyUp(() => {
+    this.editor.onKeyUp(async () => {
       // eslint-disable-next-line no-extra-boolean-cast
       if (!!this.timeoutAlarm) {
         clearTimeout(this.timeoutAlarm);
@@ -213,11 +220,30 @@ class QueryTextEditor extends React.Component<
       this.timeoutAlarm = setTimeout(this.checkSQL.bind(this), 1500);
     });
 
+    // format
+    this.monacoInstance.languages.registerDocumentFormattingEditProvider(
+      'sql',
+      {
+        provideDocumentFormattingEdits(model: editor.ITextModel) {
+          const text = model.getValue();
+          const formatted = sqlFormatter.format(text);
+
+          return [
+            {
+              range: model.getFullModelRange(),
+              text: formatted,
+            },
+          ];
+        },
+      }
+    );
+
     // initial check
     this.checkSQL();
   }
 
-  checkSQL() {
+  async checkSQL() {
+    await this.editor.getAction('editor.action.formatDocument').run();
     const query = this.editor.getValue();
 
     if (!query) {
