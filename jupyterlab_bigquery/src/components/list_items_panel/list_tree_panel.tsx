@@ -1,4 +1,4 @@
-import { LinearProgress, Button, Switch, Portal } from '@material-ui/core';
+import { LinearProgress, Button, Portal } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import * as csstips from 'csstips';
 import * as React from 'react';
@@ -63,16 +63,52 @@ const localStyles = stylesheet({
   header: {
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
     fontWeight: 600,
+    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size0, 11px)',
     letterSpacing: '1px',
     margin: 0,
     padding: '8px 12px',
     textTransform: 'uppercase',
+    flexDirection: 'row',
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+  },
+  resources: {
+    borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
+    padding: '8px 12px',
+    display: 'flex',
     flexDirection: 'column',
+    flexGrow: 1,
+  },
+  resourcesTitle: {
+    fontWeight: 600,
+    fontFamily: 'var(--jp-ui-font-family)',
+    fontSize: 'var(--jp-ui-font-size0, 11px)',
+    letterSpacing: '1px',
+    margin: 0,
+    textTransform: 'uppercase',
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: '8px',
+  },
+  search: {
+    marginBottom: '8px',
+  },
+  buttonContainer: {
+    flexGrow: 1,
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   editQueryButton: {
     margin: 'auto',
     flexGrow: 0,
+  },
+  pinProjectsButton: {
+    margin: 'auto',
+    flexGrow: 0,
+    padding: 0,
   },
   list: {
     margin: 0,
@@ -99,6 +135,12 @@ const localStyles = stylesheet({
     flexDirection: 'row',
     display: 'flex',
     alignItems: 'center',
+  },
+  buttonLabel: {
+    fontWeight: 400,
+    fontFamily: 'var(--jp-ui-font-family)',
+    fontSize: 'var(--jp-ui-font-size1)',
+    textTransform: 'initial',
   },
 });
 
@@ -155,7 +197,9 @@ class ListItemsPanel extends React.Component<Props, State> {
 
   handleKeyPress = event => {
     const { currentProject } = this.props;
+    console.log('click');
     if (event.key === 'Enter') {
+      console.log('enter');
       const searchKey = event.target.value;
       if (currentProject !== '') {
         this.search(searchKey, currentProject);
@@ -226,7 +270,7 @@ class ListItemsPanel extends React.Component<Props, State> {
       isLoading,
       isSearching,
       searchResults,
-      searchToggled,
+      // searchToggled,
       searchEnabled,
       dialogOpen,
       pinProjectDialogOpen,
@@ -239,33 +283,50 @@ class ListItemsPanel extends React.Component<Props, State> {
           <CustomSnackbar open={snackbar.open} message={snackbar.message} />
         </Portal>
         <header className={localStyles.header}>
-          BigQuery in Notebooks
-          <Button
-            color="primary"
-            size="small"
-            variant="contained"
-            className={localStyles.editQueryButton}
-            onClick={() => {
-              WidgetManager.getInstance().launchWidget(
-                QueryEditorTabWidget,
-                'main'
-              );
-            }}
-          >
-            Edit Query
-          </Button>
-          <Button
-            color="primary"
-            size="small"
-            className={localStyles.editQueryButton}
-            onClick={this.handleOpenPinProject}
-          >
-            <div className={localStyles.buttonWithIcon}>
-              <AddIcon color="primary" />
-              Pin Project
+          BigQuery Extension
+          <div className={localStyles.buttonContainer}>
+            <Button
+              color="primary"
+              size="small"
+              variant="outlined"
+              className={localStyles.editQueryButton}
+              onClick={() => {
+                WidgetManager.getInstance().launchWidget(
+                  QueryEditorTabWidget,
+                  'main'
+                );
+              }}
+            >
+              <div className={localStyles.buttonLabel}>Open SQL editor</div>
+            </Button>
+          </div>
+        </header>
+        <div className={localStyles.resources}>
+          <div className={localStyles.resourcesTitle}>
+            <div>Resources</div>
+            <div className={localStyles.buttonContainer}>
+              <Button
+                size="small"
+                variant="outlined"
+                className={localStyles.pinProjectsButton}
+                onClick={this.handleOpenPinProject}
+                startIcon={<AddIcon />}
+              >
+                <div className={localStyles.buttonLabel}>Pin project</div>
+              </Button>
             </div>
-          </Button>
-          {searchEnabled ? (
+          </div>
+          <div
+            className={localStyles.search}
+            onClick={searchEnabled ? null : this.handleOpenDialog}
+          >
+            <SearchBar
+              handleKeyPress={this.handleKeyPress}
+              handleClear={this.handleClear}
+              defaultText={'Search...'}
+            />
+          </div>
+          {/* {searchEnabled ? (
             <SearchBar
               handleKeyPress={this.handleKeyPress}
               handleClear={this.handleClear}
@@ -276,27 +337,27 @@ class ListItemsPanel extends React.Component<Props, State> {
               <Switch checked={searchToggled} onClick={this.handleOpenDialog} />
               <div style={{ alignSelf: 'center' }}>Enable Searching</div>
             </div>
+          )} */}
+          {isLoading ? (
+            <LinearProgress />
+          ) : isSearching ? (
+            <ul className={localStyles.list}>
+              <ListSearchResults
+                context={this.props.context}
+                searchResults={searchResults}
+              />
+            </ul>
+          ) : (
+            <ul className={localStyles.list}>
+              <ListProjectItem
+                context={this.props.context}
+                listDatasetsService={this.props.listDatasetsService}
+                listTablesService={this.props.listTablesService}
+                listModelsService={this.props.listModelsService}
+              />
+            </ul>
           )}
-        </header>
-        {isLoading ? (
-          <LinearProgress />
-        ) : isSearching ? (
-          <ul className={localStyles.list}>
-            <ListSearchResults
-              context={this.props.context}
-              searchResults={searchResults}
-            />
-          </ul>
-        ) : (
-          <ul className={localStyles.list}>
-            <ListProjectItem
-              context={this.props.context}
-              listDatasetsService={this.props.listDatasetsService}
-              listTablesService={this.props.listTablesService}
-              listModelsService={this.props.listModelsService}
-            />
-          </ul>
-        )}
+        </div>
         <DialogComponent
           header="Requirements to Enable Searching"
           open={dialogOpen}

@@ -2,8 +2,9 @@ import * as React from 'react';
 import { stylesheet } from 'typestyle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
+// import TextField from '@material-ui/core/TextField';
+// import InputAdornment from '@material-ui/core/InputAdornment';
+// import { Typography } from '@material-ui/core';
 
 interface Props {
   handleKeyPress: (e) => void;
@@ -15,9 +16,20 @@ const searchStyle = stylesheet({
   search: {
     display: 'flex',
     flexDirection: 'row',
+    flexGrow: 1,
+    borderStyle: 'solid',
+    borderRadius: '1px',
+    borderWidth: 'thin',
+    borderColor: '#d3d3d3',
+  },
+  searchIcon: {
+    padding: '2px',
+    color: '#d3d3d3',
   },
   clearIcon: {
     textTransform: 'none',
+    alignSelf: 'center',
+    color: '#d3d3d3',
     '&:hover': {
       cursor: 'pointer',
       opacity: 1,
@@ -48,11 +60,31 @@ export function SearchBar(props: Props) {
 
   return (
     <div className={searchStyle.search}>
-      <TextField
+      <SearchIcon className={searchStyle.searchIcon} />
+      <input
+        onKeyPress={e => props.handleKeyPress(e)}
+        onChange={e => handleOnChange(e)}
+        placeholder="Search for your tables and datasets"
+        value={searchKey}
+        style={{ borderWidth: 0, flexGrow: 1 }}
+      />
+      {showClearIcon ? (
+        <ClearIcon
+          className={searchStyle.clearIcon}
+          fontSize="small"
+          onClick={() => handleClickClear()}
+        />
+      ) : (
+        <div />
+      )}
+      {/* <TextField
         id="standard-search"
         value={searchKey}
+        size="small"
+        variant="outlined"
         placeholder={props.defaultText || 'Search...'}
-        margin="normal"
+        margin="none"
+        fullWidth={true}
         onKeyPress={e => props.handleKeyPress(e)}
         onChange={e => handleOnChange(e)}
         InputProps={{
@@ -75,7 +107,7 @@ export function SearchBar(props: Props) {
             </InputAdornment>
           ),
         }}
-      />
+      /> */}
     </div>
   );
 }
