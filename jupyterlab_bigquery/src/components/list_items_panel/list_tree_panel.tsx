@@ -271,7 +271,6 @@ class ListItemsPanel extends React.Component<Props, State> {
       isLoading,
       isSearching,
       searchResults,
-      // searchToggled,
       searchEnabled,
       dialogOpen,
       pinProjectDialogOpen,
@@ -331,18 +330,6 @@ class ListItemsPanel extends React.Component<Props, State> {
               defaultText={'Search...'}
             />
           </div>
-          {/* {searchEnabled ? (
-            <SearchBar
-              handleKeyPress={this.handleKeyPress}
-              handleClear={this.handleClear}
-              defaultText={'Search...'}
-            />
-          ) : (
-            <div className={localStyles.enableSearch}>
-              <Switch checked={searchToggled} onClick={this.handleOpenDialog} />
-              <div style={{ alignSelf: 'center' }}>Enable Searching</div>
-            </div>
-          )} */}
           {isLoading ? (
             <LinearProgress />
           ) : isSearching ? (
