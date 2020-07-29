@@ -2,9 +2,6 @@ import * as React from 'react';
 import { stylesheet } from 'typestyle';
 import SearchIcon from '@material-ui/icons/Search';
 import ClearIcon from '@material-ui/icons/Clear';
-// import TextField from '@material-ui/core/TextField';
-// import InputAdornment from '@material-ui/core/InputAdornment';
-// import { Typography } from '@material-ui/core';
 
 interface Props {
   handleKeyPress: (e) => void;
@@ -35,6 +32,10 @@ const searchStyle = stylesheet({
       opacity: 1,
     },
   },
+  searchPlaceholder: {
+    fontFamily: 'var(--jp-ui-font-family)',
+    fontSize: 'var(--jp-ui-font-size1)',
+  },
 });
 
 /** Funtional Component for a common dialog interface with cancel and submit buttons. */
@@ -64,6 +65,7 @@ export function SearchBar(props: Props) {
       <input
         onKeyPress={e => props.handleKeyPress(e)}
         onChange={e => handleOnChange(e)}
+        className={searchStyle.searchPlaceholder}
         placeholder="Search for your tables and datasets"
         value={searchKey}
         style={{ borderWidth: 0, flexGrow: 1 }}
@@ -77,37 +79,6 @@ export function SearchBar(props: Props) {
       ) : (
         <div />
       )}
-      {/* <TextField
-        id="standard-search"
-        value={searchKey}
-        size="small"
-        variant="outlined"
-        placeholder={props.defaultText || 'Search...'}
-        margin="none"
-        fullWidth={true}
-        onKeyPress={e => props.handleKeyPress(e)}
-        onChange={e => handleOnChange(e)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon />
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              {showClearIcon ? (
-                <ClearIcon
-                  className={searchStyle.clearIcon}
-                  fontSize="small"
-                  onClick={() => handleClickClear()}
-                />
-              ) : (
-                <div />
-              )}
-            </InputAdornment>
-          ),
-        }}
-      /> */}
     </div>
   );
 }

@@ -1,11 +1,6 @@
-import {
-  LinearProgress,
-  Typography,
-  CircularProgress,
-  Icon,
-} from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import { LinearProgress, CircularProgress, Icon } from '@material-ui/core';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import * as csstips from 'csstips';
@@ -66,6 +61,20 @@ const localStyles = stylesheet({
   circularProgress: {
     padding: 5,
   },
+  resourceName: {
+    fontFamily: 'var(--jp-ui-font-family)',
+    fontSize: 'var(--jp-ui-font-size1)',
+  },
+  resourceIcons: {
+    display: 'flex',
+    alignContent: 'center',
+    color: 'gray',
+  },
+  datasetName: {
+    flexDirection: 'row',
+    display: 'flex',
+    alignItems: 'center',
+  },
 });
 
 interface ProjectProps {
@@ -120,7 +129,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
 
   const getIcon = iconType => {
     return (
-      <Icon style={{ display: 'flex', alignContent: 'center' }}>
+      <Icon className={localStyles.resourceIcons}>
         <div className={`jp-Icon jp-Icon-20 jp-${iconType}Icon`} />
       </Icon>
     );
@@ -154,7 +163,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
                   onClick: () => item.handler(table),
                 }))}
               >
-                <Typography>{table.name}</Typography>
+                <div className={localStyles.resourceName}>{table.name}</div>
               </ContextMenu>
             }
             onDoubleClick={event => openTableDetails(event, table)}
@@ -170,7 +179,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
                   onClick: () => item.handler(table),
                 }))}
               >
-                <Typography>{table.name}</Typography>
+                <div className={localStyles.resourceName}>{table.name}</div>
               </ContextMenu>
             }
             onDoubleClick={event => openViewDetails(event, table)}
@@ -200,7 +209,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
               onClick: () => item.handler(model),
             }))}
           >
-            <Typography>{model.name}</Typography>
+            <div className={localStyles.resourceName}>{model.name}</div>
           </ContextMenu>
         }
       />
@@ -217,9 +226,6 @@ export function BuildTree(project, context, expandProject, expandDataset) {
 
     return (
       <div className={localStyles.itemName}>
-        <Icon style={{ display: 'flex', alignContent: 'center' }}>
-          <div className={'jp-Icon jp-Icon-20 jp-DatasetIcon'} />
-        </Icon>
         <TreeItem
           nodeId={dataset.id}
           label={
@@ -229,7 +235,12 @@ export function BuildTree(project, context, expandProject, expandDataset) {
                 onClick: () => item.handler(dataset),
               }))}
             >
-              <Typography>{dataset.name}</Typography>
+              <div className={localStyles.datasetName}>
+                <Icon style={{ display: 'flex', alignContent: 'center' }}>
+                  <div className={'jp-Icon jp-Icon-20 jp-DatasetIcon'} />
+                </Icon>
+                <div className={localStyles.resourceName}>{dataset.name}</div>
+              </div>
             </ContextMenu>
           }
           onDoubleClick={event => openDatasetDetails(event, dataset)}
@@ -238,14 +249,14 @@ export function BuildTree(project, context, expandProject, expandDataset) {
         >
           {Array.isArray(dataset.tableIds) &&
           Array.isArray(dataset.modelIds) ? (
-            <div>
+            <ul>
               {dataset.tableIds.map(tableId => (
                 <div key={tableId}>{renderTables(dataset.tables[tableId])}</div>
               ))}
               {dataset.modelIds.map(modelId => (
                 <div key={modelId}>{renderModels(dataset.models[modelId])}</div>
               ))}
-            </div>
+            </ul>
           ) : (
             <CircularProgress
               size={20}
@@ -260,7 +271,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
   const renderProjects = project => (
     <TreeItem
       nodeId={project.id}
-      label={project.name}
+      label={<div className={localStyles.resourceName}>{project.name}</div>}
       onIconClick={expandProject(project)}
     >
       {Array.isArray(project.datasetIds) ? (
@@ -280,9 +291,9 @@ export function BuildTree(project, context, expandProject, expandDataset) {
   return (
     <TreeView
       className={localStyles.root}
-      defaultCollapseIcon={<ExpandMoreIcon />}
+      defaultCollapseIcon={<ArrowDropDownIcon fontSize="small" />}
       defaultExpanded={['root']}
-      defaultExpandIcon={<ChevronRightIcon />}
+      defaultExpandIcon={<ArrowRightIcon fontSize="small" />}
     >
       {renderProjects(project)}
     </TreeView>
