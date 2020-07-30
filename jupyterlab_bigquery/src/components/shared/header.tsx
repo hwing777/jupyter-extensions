@@ -6,7 +6,7 @@ const localStyles = stylesheet({
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
     fontSize: '18px',
     margin: 0,
-    padding: '8px 12px 8px 24px',
+    padding: '16px 12px 16px 24px',
   },
 });
 
