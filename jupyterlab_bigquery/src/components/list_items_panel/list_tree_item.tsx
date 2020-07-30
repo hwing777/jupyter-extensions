@@ -68,7 +68,7 @@ const localStyles = stylesheet({
   resourceIcons: {
     display: 'flex',
     alignContent: 'center',
-    color: 'gray',
+    color: 'var(--jp-layout-color3)',
   },
   datasetName: {
     flexDirection: 'row',

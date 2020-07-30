@@ -21,12 +21,12 @@ const searchStyle = stylesheet({
   },
   searchIcon: {
     padding: '2px',
-    color: '#d3d3d3',
+    color: 'var(--jp-layout-color3)',
   },
   clearIcon: {
     textTransform: 'none',
     alignSelf: 'center',
-    color: '#d3d3d3',
+    color: 'var(--jp-layout-color3)',
     '&:hover': {
       cursor: 'pointer',
       opacity: 1,
@@ -35,6 +35,7 @@ const searchStyle = stylesheet({
   searchPlaceholder: {
     fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
+    minWidth: 0,
   },
 });
 
