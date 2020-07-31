@@ -15,7 +15,14 @@ interface QueryEditorInCellProps {
   ipyView: DOMWidgetView;
 }
 
-export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
+interface QueryEditorInCellState {
+  width: number;
+}
+
+export class QueryEditorInCell extends Component<
+  QueryEditorInCellProps,
+  QueryEditorInCellState
+> {
   queryId: QueryId;
   iniQuery: string;
   queryFlags: { [keys: string]: any };
@@ -27,11 +34,19 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
     this.iniQuery = this.props.ipyView.model.get('query') as string;
     const rawQueryFlags = this.props.ipyView.model.get('query_flags') as string;
     this.queryFlags = JSON.parse(rawQueryFlags);
+
+    this.state = {
+      width: 0,
+    };
   }
 
-  updateDimensions() {
-    console.log('resized');
-  }
+  // private containerRef = React.createRef<HTMLDivElement>();
+  // onRefChange = node => {
+  //   console.log('onrefChange triggered');
+  //   if (node) {
+  //     this.setState({ width: node.clientWidth });
+  //   }
+  // };
 
   render() {
     const { queries } = this.props;
@@ -41,12 +56,13 @@ export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
     const showResult = !!queryResult && queryResult.content.length > 0;
 
     return (
-      <div style={{ width: '100%' }}>
+      <div>
         <QueryTextEditor
           queryId={this.queryId}
           iniQuery={this.iniQuery}
           editorType="IN_CELL"
           queryFlags={this.queryFlags}
+          // ref={this.onRefChange}
         />
         {showResult ? (
           <QueryResults queryId={this.queryId} editorType="IN_CELL" />

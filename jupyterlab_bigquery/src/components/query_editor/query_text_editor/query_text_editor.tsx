@@ -478,7 +478,9 @@ class QueryTextEditor extends React.Component<
   }
 }
 
-const mapStateToProps = () => {};
+const mapStateToProps = _ => {
+  return {};
+};
 
 const mapDispatchToProps = {
   updateQueryResult,
