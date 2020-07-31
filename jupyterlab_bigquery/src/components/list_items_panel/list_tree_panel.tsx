@@ -26,7 +26,7 @@ import {
   SearchResult,
 } from '../list_items_panel/service/search_items';
 import { SearchBar } from './search_bar';
-import { DialogComponent } from 'gcp_jupyterlab_shared';
+import { DialogComponent, COLORS } from 'gcp_jupyterlab_shared';
 import CustomSnackbar from './snackbar';
 
 interface Props {
@@ -50,6 +50,7 @@ export interface Context {
 interface State {
   hasLoaded: boolean;
   isLoading: boolean;
+  isLoadingSearch: boolean;
   searchToggled: boolean;
   searchEnabled: boolean;
   dialogOpen: boolean;
@@ -81,6 +82,7 @@ const localStyles = stylesheet({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
+    overflow: 'hidden',
   },
   resourcesTitle: {
     fontWeight: 600,
@@ -113,7 +115,31 @@ const localStyles = stylesheet({
   },
   list: {
     margin: 0,
-    overflowY: 'scroll',
+    flexDirection: 'column',
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    gridTemplateRows: '1fr',
+    flexGrow: 1,
+    overflow: 'scroll',
+    padding: 0,
+    ...csstips.flex,
+  },
+  resourceTree: {
+    gridColumnStart: 1,
+    gridRowStart: 1,
+  },
+  hidden: {
+    display: 'none',
+    margin: 0,
+    padding: 0,
+    ...csstips.flex,
+  },
+  showing: {
+    zIndex: 1,
+    gridColumnStart: 1,
+    gridRowStart: 1,
+    backgroundColor: 'white',
+    margin: 0,
     padding: 0,
     ...csstips.flex,
   },
@@ -151,6 +177,7 @@ class ListItemsPanel extends React.Component<Props, State> {
     this.state = {
       hasLoaded: false,
       isLoading: false,
+      isLoadingSearch: false,
       searchToggled: false,
       searchEnabled: false,
       dialogOpen: false,
@@ -185,7 +212,7 @@ class ListItemsPanel extends React.Component<Props, State> {
 
   async search(searchKey, project) {
     try {
-      this.setState({ isLoading: true, isSearching: true });
+      this.setState({ isLoadingSearch: true, isSearching: true });
       const service = new SearchProjectsService();
       await service.searchProjects(searchKey, project).then(results => {
         this.setState({ searchResults: results.searchResults });
@@ -193,7 +220,7 @@ class ListItemsPanel extends React.Component<Props, State> {
     } catch (err) {
       console.warn('Error searching', err);
     }
-    this.setState({ isLoading: false });
+    this.setState({ isLoadingSearch: false });
   }
 
   handleKeyPress = event => {
@@ -269,6 +296,7 @@ class ListItemsPanel extends React.Component<Props, State> {
   render() {
     const {
       isLoading,
+      isLoadingSearch,
       isSearching,
       searchResults,
       searchEnabled,
@@ -277,6 +305,10 @@ class ListItemsPanel extends React.Component<Props, State> {
       loadingPinnedProject,
     } = this.state;
     const { snackbar } = this.props;
+
+    const showSearchResults = isSearching
+      ? localStyles.showing
+      : localStyles.hidden;
     return (
       <div className={localStyles.panel}>
         <Portal>
@@ -286,7 +318,7 @@ class ListItemsPanel extends React.Component<Props, State> {
           BigQuery Extension
           <div className={localStyles.buttonContainer}>
             <Button
-              color="primary"
+              style={{ color: COLORS.blue }}
               size="small"
               variant="outlined"
               className={localStyles.editQueryButton}
@@ -332,21 +364,26 @@ class ListItemsPanel extends React.Component<Props, State> {
           </div>
           {isLoading ? (
             <LinearProgress />
-          ) : isSearching ? (
-            <ul className={localStyles.list}>
-              <ListSearchResults
-                context={this.props.context}
-                searchResults={searchResults}
-              />
-            </ul>
           ) : (
             <ul className={localStyles.list}>
-              <ListProjectItem
-                context={this.props.context}
-                listDatasetsService={this.props.listDatasetsService}
-                listTablesService={this.props.listTablesService}
-                listModelsService={this.props.listModelsService}
-              />
+              <div className={localStyles.resourceTree}>
+                <ListProjectItem
+                  context={this.props.context}
+                  listDatasetsService={this.props.listDatasetsService}
+                  listTablesService={this.props.listTablesService}
+                  listModelsService={this.props.listModelsService}
+                />
+              </div>
+              <div className={showSearchResults}>
+                {isLoadingSearch ? (
+                  <LinearProgress />
+                ) : (
+                  <ListSearchResults
+                    context={this.props.context}
+                    searchResults={searchResults}
+                  />
+                )}
+              </div>
             </ul>
           )}
         </div>
