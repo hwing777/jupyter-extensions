@@ -224,9 +224,7 @@ class ListItemsPanel extends React.Component<Props, State> {
 
   handleKeyPress = event => {
     const { currentProject } = this.props;
-    console.log('click');
     if (event.key === 'Enter') {
-      console.log('enter');
       const searchKey = event.target.value;
       if (currentProject !== '') {
         this.search(searchKey, currentProject);
