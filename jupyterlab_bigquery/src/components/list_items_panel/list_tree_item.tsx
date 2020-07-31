@@ -22,6 +22,9 @@ import { DatasetDetailsWidget } from '../details_panel/dataset_details_widget';
 import { DatasetDetailsService } from '../details_panel/service/list_dataset_details';
 import { TableDetailsWidget } from '../details_panel/table_details_widget';
 import { TableDetailsService } from '../details_panel/service/list_table_details';
+import { QueryEditorTabWidget } from '../query_editor/query_editor_tab/query_editor_tab_widget';
+import { generateQueryId } from '../../reducers/queryEditorTabSlice';
+import { WidgetManager } from '../../utils/widgetManager/widget_manager';
 import { updateProject, updateDataset } from '../../reducers/dataTreeSlice';
 import { openSnackbar } from '../../reducers/snackbarSlice';
 
@@ -97,6 +100,21 @@ export function BuildTree(project, context, expandProject, expandDataset) {
     Clipboard.copyToSystem(dataTreeItem.id);
   };
 
+  const queryResource = dataTreeItem => {
+    const queryId = generateQueryId();
+    WidgetManager.getInstance().launchWidget(
+      QueryEditorTabWidget,
+      'main',
+      queryId,
+      undefined,
+      [queryId, `SELECT * FROM \`${dataTreeItem.id}\``]
+    );
+  };
+
+  const copyBoilerplateQuery = dataTreeItem => {
+    Clipboard.copyToSystem(`SELECT * FROM \`${dataTreeItem.id}\``);
+  };
+
   const openDatasetDetails = (event, dataset) => {
     const service = new DatasetDetailsService();
     const widgetType = DatasetDetailsWidget;
@@ -138,14 +156,22 @@ export function BuildTree(project, context, expandProject, expandDataset) {
   const renderTables = table => {
     const tableContextMenuItems = [
       {
-        label: 'Copy Table ID',
+        label: 'Query table',
+        handler: dataTreeItem => queryResource(dataTreeItem),
+      },
+      {
+        label: 'Copy table ID',
         handler: dataTreeItem => copyID(dataTreeItem),
+      },
+      {
+        label: 'Copy boilerplate query',
+        handler: dataTreeItem => copyBoilerplateQuery(dataTreeItem),
       },
     ];
 
     const viewContextMenuItems = [
       {
-        label: 'Copy View ID',
+        label: 'Copy view ID',
         handler: dataTreeItem => copyID(dataTreeItem),
       },
     ];
@@ -194,7 +220,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
   const renderModels = model => {
     const contextMenuItems = [
       {
-        label: 'Copy Model ID',
+        label: 'Copy model ID',
         handler: dataTreeItem => copyID(dataTreeItem),
       },
     ];
@@ -219,7 +245,7 @@ export function BuildTree(project, context, expandProject, expandDataset) {
   const renderDatasets = dataset => {
     const contextMenuItems = [
       {
-        label: 'Copy Dataset ID',
+        label: 'Copy dataset ID',
         handler: dataTreeItem => copyID(dataTreeItem),
       },
     ];
