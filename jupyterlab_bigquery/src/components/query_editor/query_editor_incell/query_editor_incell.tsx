@@ -13,16 +13,10 @@ import { DOMWidgetView } from '@jupyter-widgets/base';
 interface QueryEditorInCellProps {
   queries: { [key: string]: QueryResult };
   ipyView: DOMWidgetView;
+  width?: number;
 }
 
-interface QueryEditorInCellState {
-  width: number;
-}
-
-export class QueryEditorInCell extends Component<
-  QueryEditorInCellProps,
-  QueryEditorInCellState
-> {
+export class QueryEditorInCell extends Component<QueryEditorInCellProps, {}> {
   queryId: QueryId;
   iniQuery: string;
   queryFlags: { [keys: string]: any };
@@ -34,10 +28,6 @@ export class QueryEditorInCell extends Component<
     this.iniQuery = this.props.ipyView.model.get('query') as string;
     const rawQueryFlags = this.props.ipyView.model.get('query_flags') as string;
     this.queryFlags = JSON.parse(rawQueryFlags);
-
-    this.state = {
-      width: 0,
-    };
   }
 
   // private containerRef = React.createRef<HTMLDivElement>();
@@ -63,6 +53,7 @@ export class QueryEditorInCell extends Component<
           editorType="IN_CELL"
           queryFlags={this.queryFlags}
           // ref={this.onRefChange}
+          width={this.props.width}
         />
         {showResult ? (
           <QueryResults queryId={this.queryId} editorType="IN_CELL" />

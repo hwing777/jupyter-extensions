@@ -131,6 +131,8 @@ class QueryTextEditor extends React.Component<
 
   pagedQueryService: PagedService<QueryRequestBodyType, QueryResponseType>;
 
+  private editorRef = React.createRef<HTMLDivElement>();
+
   constructor(props) {
     super(props);
     this.state = {
@@ -162,18 +164,11 @@ class QueryTextEditor extends React.Component<
     window.removeEventListener('resize', this.updateDimensions.bind(this));
   }
 
-  componentDidUpdate(
-    prevProps: QueryTextEditorProps,
-    prevState: QueryTextEditorState
-  ) {
-    if (
-      (prevProps.width !== this.props.width ||
-        prevState.height !== this.state.height) &&
-      this.editor
-    ) {
+  componentDidUpdate() {
+    if (this.editor && this.editorRef) {
       this.editor.layout({
-        width: this.props.width,
-        height: this.state.height,
+        width: this.editorRef.current.clientWidth,
+        height: this.editor.getDomNode().clientHeight,
       });
     }
   }
@@ -422,8 +417,6 @@ class QueryTextEditor extends React.Component<
 
     return undefined;
   }
-
-  private editorRef = React.createRef<HTMLDivElement>();
 
   render() {
     const { iniQuery } = this.props;
