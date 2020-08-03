@@ -240,7 +240,7 @@ export default class ListSearchResults extends React.Component<
   render() {
     const { context, searchResults } = this.props;
     return searchResults.map(result => (
-      <div className={localStyles.root}>
+      <div key={result.id} className={localStyles.root}>
         {BuildSearchResult(result, context)}
       </div>
     ));
