@@ -268,25 +268,47 @@ export function BuildTree(project, context, expandProject, expandDataset) {
     );
   };
 
-  const renderProjects = project => (
-    <TreeItem
-      nodeId={project.id}
-      label={<div className={localStyles.resourceName}>{project.name}</div>}
-      onIconClick={expandProject(project)}
-    >
-      {Array.isArray(project.datasetIds) ? (
-        project.datasetIds.map(datasetId => (
-          <div key={datasetId}>
-            {renderDatasets(project.datasets[datasetId])}
-          </div>
-        ))
-      ) : project.error ? (
-        <div>{project.error}</div>
-      ) : (
-        <CircularProgress size={20} className={localStyles.circularProgress} />
-      )}
-    </TreeItem>
-  );
+  const renderProjects = project => {
+    const contextMenuItems = [
+      {
+        label: 'Copy Project ID',
+        handler: dataTreeItem => copyID(dataTreeItem),
+      },
+    ];
+
+    return (
+      <TreeItem
+        nodeId={project.id}
+        label={
+          <ContextMenu
+            items={contextMenuItems.map(item => ({
+              label: item.label,
+              onClick: () => item.handler(project),
+            }))}
+          >
+            <div className={localStyles.resourceName}>{project.name}</div>
+          </ContextMenu>
+        }
+        onIconClick={expandProject(project)}
+        onLabelClick={event => event.preventDefault()}
+      >
+        {Array.isArray(project.datasetIds) ? (
+          project.datasetIds.map(datasetId => (
+            <div key={datasetId}>
+              {renderDatasets(project.datasets[datasetId])}
+            </div>
+          ))
+        ) : project.error ? (
+          <div>{project.error}</div>
+        ) : (
+          <CircularProgress
+            size={20}
+            className={localStyles.circularProgress}
+          />
+        )}
+      </TreeItem>
+    );
+  };
 
   return (
     <TreeView
