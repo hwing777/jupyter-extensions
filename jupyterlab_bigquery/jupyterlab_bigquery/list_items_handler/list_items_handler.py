@@ -37,3 +37,11 @@ def _search(args):
 def _get_project(args):
   custom_client = BigQueryService.get().create_custom_client(args["projectId"])
   return BigQueryService.get().get_project(custom_client)
+
+@_handler("POST", "queryHistory")
+def _get_query_history(args):
+  return BigQueryService.get().list_jobs(args["projectId"])
+
+@_handler("POST", "queryDetails")
+def _get_job_details(args):
+  return BigQueryService.get().get_job_details(args["jobId"])

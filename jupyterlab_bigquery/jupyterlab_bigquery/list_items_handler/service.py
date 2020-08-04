@@ -2,6 +2,10 @@
 """Request handler classes for the extensions."""
 
 import re
+import json
+import base64
+import math
+import datetime
 from google.cloud import bigquery
 from google.cloud.datacatalog import DataCatalogClient, enums, types
 
@@ -91,22 +95,6 @@ class BigQueryService:
 
     return {'models': models_list, 'modelIds': model_ids}
 
-  def list_jobs(self, project):
-    jobs = list(self._client.list_jobs(project))
-
-    jobs_list = {}
-    job_ids = []
-    for job in jobs:
-      print(job.job_type)
-      print(job.query)
-      job_full_id = '{}:{}'.format(job.project, job.job_id)
-      jobs_list[job_full_id] = {
-          'id': job_full_id,
-      }
-      job_ids.append(job_full_id)
-
-    # return {'jobs': jobs_list, 'jobIds': job_ids}
-
   def search_projects(self, search_key, project_id):
     scope = types.SearchCatalogRequest.Scope()
     scope.include_project_ids.append(project_id)
@@ -170,3 +158,68 @@ class BigQueryService:
         'name': format(project),
     }
     return formatted_project
+
+  def format_value(self, value):
+    if value is None:
+      return None
+    elif isinstance(value, bytes):
+      return base64.b64encode(value).__str__()[2:-1]
+    elif isinstance(value, float):
+      if value == float('inf'):
+        return 'Infinity'
+      elif value == float('-inf'):
+        return '-Infinity'
+      elif math.isnan(value):
+        return 'NaN'
+      else:
+        return value
+    elif isinstance(value, datetime.datetime):
+      return json.dumps(value.strftime('%b %e, %G, %l:%M:%S %p'))[1:-1]
+    else:
+      return value.__str__()
+
+  def get_table(self, tableRef):
+    try:
+      tableId = self._client.get_table(tableRef).id
+      return tableId
+    except:
+      return 'Expired temporary table'
+
+  def list_jobs(self, project):
+    jobs = list(self._client.list_jobs(project))
+
+    jobs_list = {}
+    job_ids = []
+    for job in jobs:
+      if job.job_type != 'query':
+        continue
+      jobs_list[job.job_id] = {
+          'query': job.query,
+          'id': job.job_id,
+          'created': self.format_value(job.created),
+      }
+      job_ids.append(job.job_id)
+
+    return {'jobs': jobs_list, 'jobIds': job_ids}
+
+  def get_job_details(self, job_id):
+    job = self._client.get_job(job_id)
+    job_details = {
+        'query': job.query,
+        'id': job_id,
+        'user': job.user_email,
+        'location': job.location,
+        'created': self.format_value(job.created),
+        'started': self.format_value(job.started),
+        'ended': self.format_value(job.ended),
+        'duration': job.slot_millis,
+        'bytesProcessed': job.estimated_bytes_processed,
+        'priority': job.priority,
+        'destination': self.get_table(job.destination),
+        'useLegacySql': job.use_legacy_sql,
+        'state': job.state,
+        'errors': job.errors,
+        'errorResult': job.error_result
+    }
+
+    return job_details

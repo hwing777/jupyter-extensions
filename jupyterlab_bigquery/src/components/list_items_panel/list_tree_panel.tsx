@@ -14,6 +14,10 @@ import {
   ListModelsService,
   GetProjectService,
 } from './service/list_items';
+import {
+  QueryHistoryService,
+  QueryDetailsService,
+} from './service/query_history';
 import ListProjectItem from './list_tree_item';
 import { WidgetManager } from '../../utils/widgetManager/widget_manager';
 import ListSearchResults from './list_search_results';
@@ -151,8 +155,6 @@ const localStyles = stylesheet({
     height: '100%',
     //...BASE_FONT,
     ...csstips.vertical,
-    marginTop: '5px',
-    marginBottom: '5px',
   },
   enableSearch: {
     ...csstips.flex,
@@ -170,6 +172,20 @@ const localStyles = stylesheet({
     fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
     textTransform: 'initial',
+  },
+  queryHistory: {
+    fontWeight: 600,
+    fontFamily: 'var(--jp-ui-font-family)',
+    fontSize: 'var(--jp-ui-font-size0, 11px)',
+    letterSpacing: '1px',
+    margin: 0,
+    padding: '8px 12px',
+    textTransform: 'uppercase',
+    '&:hover': {
+      backgroundColor: '#e8e8e8',
+      opacity: 1,
+      cursor: 'pointer',
+    },
   },
 });
 
@@ -289,6 +305,33 @@ class ListItemsPanel extends React.Component<Props, State> {
     this.setState({ pinProjectDialogOpen: false });
   };
 
+  // Handlers for query history
+
+  openQueryHistory = async () => {
+    const service = new QueryHistoryService();
+    let jobIds = [];
+    await service.getQueryHistory('hwing-sandbox').then(queryHistory => {
+      console.log('retrieved history');
+      jobIds = queryHistory.jobIds;
+    });
+    // This is for testing. Functionality will be moved to the query history widget
+    const test = jobIds[0];
+    await this.handleExpandJob(test);
+  };
+
+  handleExpandJob = async jobId => {
+    // This function will be moved to the query history widget
+    await this.getQueryDetails(jobId);
+  };
+
+  getQueryDetails = async jobId => {
+    // This function will be moved to the query history widget
+    const service = new QueryDetailsService();
+    await service.getQueryDetails(jobId).then(queryDetails => {
+      console.log(queryDetails);
+    });
+  };
+
   async componentWillMount() {
     try {
       //empty
@@ -398,6 +441,12 @@ class ListItemsPanel extends React.Component<Props, State> {
               </div>
             </ul>
           )}
+        </div>
+        <div
+          className={localStyles.queryHistory}
+          onClick={this.openQueryHistory}
+        >
+          Query History
         </div>
         <DialogComponent
           header="Requirements to Enable Searching"
