@@ -95,6 +95,22 @@ class BigQueryService:
 
     return {'models': models_list, 'modelIds': model_ids}
 
+  def list_jobs(self, project):
+    jobs = list(self._client.list_jobs(project))
+
+    jobs_list = {}
+    job_ids = []
+    for job in jobs:
+      print(job.job_type)
+      print(job.query)
+      job_full_id = '{}:{}'.format(job.project, job.job_id)
+      jobs_list[job_full_id] = {
+          'id': job_full_id,
+      }
+      job_ids.append(job_full_id)
+
+    # return {'jobs': jobs_list, 'jobIds': job_ids}
+
   def search_projects(self, search_key, project_id):
     scope = types.SearchCatalogRequest.Scope()
     scope.include_project_ids.append(project_id)
