@@ -33,7 +33,6 @@ const searchStyle = stylesheet({
     },
   },
   searchPlaceholder: {
-    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
     minWidth: 0,
     textOverflow: 'ellipsis',

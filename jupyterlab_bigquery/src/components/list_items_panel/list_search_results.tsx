@@ -42,11 +42,9 @@ const localStyles = stylesheet({
     },
   },
   searchResultTitle: {
-    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
   },
   searchResultSubtitle: {
-    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size0)',
     color: 'gray',
   },

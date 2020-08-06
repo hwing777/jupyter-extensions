@@ -8,6 +8,7 @@ import { Header } from '../shared/header';
 import LoadingPanel from '../loading_panel';
 import { DetailsPanel } from './details_panel';
 import { stylesheet } from 'typestyle';
+import { BASE_FONT } from 'gcp_jupyterlab_shared';
 
 export const localStyles = stylesheet({
   body: {
@@ -22,6 +23,7 @@ export const localStyles = stylesheet({
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
+    ...BASE_FONT,
   },
 });
 

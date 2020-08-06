@@ -72,7 +72,6 @@ const localStyles = stylesheet({
     padding: 5,
   },
   resourceName: {
-    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
   },
   resourceIcons: {

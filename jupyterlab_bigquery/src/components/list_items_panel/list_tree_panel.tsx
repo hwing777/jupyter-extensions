@@ -31,7 +31,7 @@ import {
   SearchResult,
 } from '../list_items_panel/service/search_items';
 import { SearchBar } from './search_bar';
-import { DialogComponent, COLORS } from 'gcp_jupyterlab_shared';
+import { DialogComponent, COLORS, BASE_FONT } from 'gcp_jupyterlab_shared';
 import CustomSnackbar from './snackbar';
 
 interface Props {
@@ -67,15 +67,22 @@ interface State {
 }
 
 const localStyles = stylesheet({
+  panel: {
+    backgroundColor: 'white',
+    //color: COLORS.base,
+    height: '100%',
+    ...BASE_FONT,
+    // fontFamily: 'var(--jp-ui-font-family)',
+    ...csstips.vertical,
+    marginTop: '5px',
+    marginBottom: '5px',
+  },
   header: {
     borderBottom: 'var(--jp-border-width) solid var(--jp-border-color2)',
-    fontWeight: 600,
-    fontFamily: 'var(--jp-ui-font-family)',
-    fontSize: 'var(--jp-ui-font-size0, 11px)',
+    fontWeight: 500,
     letterSpacing: '1px',
     margin: 0,
     padding: '8px 12px',
-    textTransform: 'uppercase',
     flexDirection: 'row',
     display: 'flex',
     justifyContent: 'space-between',
@@ -89,12 +96,9 @@ const localStyles = stylesheet({
     overflow: 'hidden',
   },
   resourcesTitle: {
-    fontWeight: 600,
-    fontFamily: 'var(--jp-ui-font-family)',
-    fontSize: 'var(--jp-ui-font-size0, 11px)',
+    fontWeight: 500,
     letterSpacing: '1px',
     margin: 0,
-    textTransform: 'uppercase',
     display: 'flex',
     flexDirection: 'row',
     marginBottom: '8px',
@@ -116,7 +120,6 @@ const localStyles = stylesheet({
   },
   buttonLabel: {
     fontWeight: 400,
-    fontFamily: 'var(--jp-ui-font-family)',
     fontSize: 'var(--jp-ui-font-size1)',
     textTransform: 'initial',
     overflow: 'hidden',
@@ -162,15 +165,6 @@ const localStyles = stylesheet({
     margin: 0,
     padding: 0,
     ...csstips.flex,
-  },
-  panel: {
-    backgroundColor: 'white',
-    //color: COLORS.base,
-    height: '100%',
-    //...BASE_FONT,
-    ...csstips.vertical,
-    marginTop: '5px',
-    marginBottom: '5px',
   },
   enableSearch: {
     ...csstips.flex,
