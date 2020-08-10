@@ -258,6 +258,14 @@ export class TableResource extends Resource<TableProps> {
     );
   };
 
+  getTableIcon = table => {
+    if (table.partitioned) {
+      return this.getIcon('PartitionedTable');
+    } else {
+      return this.getIcon('Table');
+    }
+  };
+
   tableContextMenuItems = [
     {
       label: 'Query table',
@@ -287,7 +295,7 @@ export class TableResource extends Resource<TableProps> {
         {table.type === 'TABLE' ? (
           <TreeItem
             nodeId={table.id}
-            icon={this.getIcon('Table')}
+            icon={this.getTableIcon(table)}
             label={
               <ContextMenu
                 items={this.tableContextMenuItems.map(item => ({
