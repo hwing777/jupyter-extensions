@@ -484,12 +484,7 @@ export class ProjectResource extends Resource<ProjectProps> {
   };
 
   expandProject = project => {
-    if (project.error) {
-      console.log('ERROR');
-      this.handleOpenSnackbar(project.error);
-    } else {
-      this.getDatasets(project, this.listDatasetsService);
-    }
+    this.getDatasets(project, this.listDatasetsService);
   };
 
   private async getDatasets(project, listDatasetsService) {
@@ -517,13 +512,16 @@ export class ProjectResource extends Resource<ProjectProps> {
         'The project does not exist or does not have BigQuery enabled.';
       newProject['error'] = `Error: ${errorMessage}`;
     } finally {
+      if (newProject['error']) {
+        this.handleOpenSnackbar(newProject['error']);
+      }
       this.props.updateProject(newProject);
       this.setState({ loading: false });
     }
   }
 
   handleExpandProject = project => {
-    if (!Array.isArray(project.datasetIds)) {
+    if (!Array.isArray(project.datasetIds) && !project.error) {
       this.setState({ loading: true });
       this.expandProject(project);
     }

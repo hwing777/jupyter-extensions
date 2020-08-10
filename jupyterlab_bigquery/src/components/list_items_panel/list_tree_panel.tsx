@@ -273,6 +273,7 @@ class ListItemsPanel extends React.Component<Props, State> {
           this.props.addProject(project);
         } else {
           console.log('This project does not exist');
+          this.props.openSnackbar(`Project ${newProjectId} does not exist.`);
         }
       });
     } catch (err) {
