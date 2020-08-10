@@ -385,18 +385,6 @@ class ListItemsPanel extends React.Component<Props, State> {
                   <AddIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
-              {/* <Tooltip title="Pin project">
-                <Button
-                  size="small"
-                  variant="outlined"
-                  style={{ minWidth: 0 }}
-                  className={localStyles.pinProjectsButton}
-                  onClick={this.handleOpenPinProject}
-                  startIcon={<AddIcon />}
-                >
-                  <div className={localStyles.buttonLabel}>Pin project</div>
-                </Button>
-              </Tooltip> */}
             </div>
           </div>
           <div

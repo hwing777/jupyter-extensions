@@ -98,7 +98,6 @@ interface ResourceProps {
   context: Context;
   updateProject?: any;
   updateDataset?: any;
-  openSnackbar?: any;
 }
 
 export interface ModelProps extends ResourceProps {
@@ -118,6 +117,7 @@ export interface ProjectProps extends ResourceProps {
   project: Project;
   updateProject: any;
   updateDataset: any;
+  openSnackbar: any;
 }
 
 interface State {
@@ -137,10 +137,6 @@ export class Resource<T extends ResourceProps> extends React.Component<
     super(props);
   }
 
-  handleOpenSnackbar = error => {
-    this.props.openSnackbar(error);
-  };
-
   copyID = dataTreeItem => {
     Clipboard.copyToSystem(dataTreeItem.id);
   };
@@ -159,7 +155,7 @@ export class Resource<T extends ResourceProps> extends React.Component<
 }
 
 export class ModelResource extends Resource<ModelProps> {
-  constructor(props) {
+  constructor(props: ModelProps) {
     super(props);
   }
 
@@ -206,7 +202,7 @@ export class ModelResource extends Resource<ModelProps> {
 }
 
 export class TableResource extends Resource<TableProps> {
-  constructor(props) {
+  constructor(props: TableProps) {
     super(props);
   }
 
@@ -329,7 +325,7 @@ export class TableResource extends Resource<TableProps> {
 }
 
 export class DatasetResource extends Resource<DatasetProps> {
-  constructor(props: ProjectProps) {
+  constructor(props: DatasetProps) {
     super(props);
     this.state = {
       expanded: [],
@@ -483,8 +479,13 @@ export class ProjectResource extends Resource<ProjectProps> {
 
   listDatasetsService = new ListDatasetsService();
 
+  handleOpenSnackbar = error => {
+    this.props.openSnackbar(error);
+  };
+
   expandProject = project => {
     if (project.error) {
+      console.log('ERROR');
       this.handleOpenSnackbar(project.error);
     } else {
       this.getDatasets(project, this.listDatasetsService);
@@ -618,6 +619,7 @@ class ListProjectItem extends React.Component<ResourceListProps, State> {
             context={context}
             updateProject={this.props.updateProject}
             updateDataset={this.props.updateDataset}
+            openSnackbar={this.props.openSnackbar}
           />
         </div>
       ));
