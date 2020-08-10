@@ -32,7 +32,11 @@ import { ViewDetailsWidget } from '../details_panel/view_details_widget';
 import { ViewDetailsService } from '../details_panel/service/list_view_details';
 import { ModelDetailsWidget } from '../details_panel/model_details_widget';
 import { ModelDetailsService } from '../details_panel/service/list_model_details';
-import { updateProject, updateDataset } from '../../reducers/dataTreeSlice';
+import {
+  updateProject,
+  updateDataset,
+  removeProject,
+} from '../../reducers/dataTreeSlice';
 import { openSnackbar } from '../../reducers/snackbarSlice';
 
 import '../../../style/index.css';
@@ -92,6 +96,7 @@ interface ResourceListProps {
   updateProject: any;
   updateDataset: any;
   openSnackbar: any;
+  removeProject: any;
 }
 
 interface ResourceProps {
@@ -118,6 +123,7 @@ export interface ProjectProps extends ResourceProps {
   updateProject: any;
   updateDataset: any;
   openSnackbar: any;
+  removeProject: any;
 }
 
 interface State {
@@ -541,6 +547,10 @@ export class ProjectResource extends Resource<ProjectProps> {
     this.setState({ expanded: [project.id] });
   }
 
+  async handleUnpinProject(project) {
+    await this.props.removeProject(project);
+  }
+
   handleToggle = (event, nodeIds) => {
     this.setState({ expanded: nodeIds });
   };
@@ -553,6 +563,10 @@ export class ProjectResource extends Resource<ProjectProps> {
     {
       label: 'Refresh project',
       handler: () => this.handleRefreshProject(this.props.project),
+    },
+    {
+      label: 'Unpin project',
+      handler: () => this.handleUnpinProject(this.props.project),
     },
   ];
 
@@ -626,6 +640,7 @@ class ListProjectItem extends React.Component<ResourceListProps, State> {
             updateProject={this.props.updateProject}
             updateDataset={this.props.updateDataset}
             openSnackbar={this.props.openSnackbar}
+            removeProject={this.props.removeProject}
           />
         </div>
       ));
@@ -643,6 +658,7 @@ const mapDispatchToProps = {
   updateProject,
   updateDataset,
   openSnackbar,
+  removeProject,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListProjectItem);
