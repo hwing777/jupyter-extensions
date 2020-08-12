@@ -38,6 +38,7 @@ interface QueryTextEditorState {
   bytesProcessed: number | null;
   message: string | null;
   ifMsgErr: boolean;
+  width: number;
   height: number;
   renderMonacoEditor: boolean;
 }
@@ -51,6 +52,7 @@ interface QueryTextEditorProps {
   editorType?: QueryEditorType;
   queryFlags?: { [keys: string]: any };
   width?: number;
+  height?: number;
   onQueryChange?: (string) => void;
 }
 
@@ -169,6 +171,7 @@ class QueryTextEditor extends React.Component<
       bytesProcessed: null,
       message: null,
       ifMsgErr: false,
+      width: 0,
       height: 0,
       renderMonacoEditor: false,
     };
@@ -212,15 +215,16 @@ class QueryTextEditor extends React.Component<
     prevProps: QueryTextEditorProps,
     prevState: QueryTextEditorState
   ) {
-    if (
-      (prevProps.width !== this.props.width ||
-        prevState.height !== this.state.height) &&
-      this.editor
-    ) {
-      this.editor.layout({
-        width: this.props.width,
-        height: this.state.height,
-      });
+    if (this.editor) {
+      const prevWidth = prevProps.width ?? prevState.width;
+      const prevHeight = prevProps.height ?? prevState.height;
+
+      const tWidth = this.props.width ?? this.state.width;
+      const tHeight = this.props.height ?? this.state.height;
+
+      if (prevWidth !== tWidth || prevHeight !== tHeight) {
+        this.editor.layout({ width: tWidth, height: tHeight });
+      }
     }
   }
 
@@ -289,7 +293,10 @@ class QueryTextEditor extends React.Component<
 
   handleEditorDidMount(_, editor) {
     if (this.editorRef.current) {
-      this.setState({ height: this.editorRef.current.clientHeight });
+      this.setState({
+        height: this.editorRef.current.clientHeight,
+        width: this.editorRef.current.clientWidth,
+      });
     }
     this.editor = editor;
 
